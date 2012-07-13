@@ -49,15 +49,22 @@
       for(var i = 0; i < jsonItems.length; i++) {
         var value = jsonItems[i];
         //now we have all the attributes, we can make an element out of this
+        //store the element type (as in the HTML element)
         var fieldElement = value.element;
+        //then delete it so the attributes object doesn't contain the HTML element
         delete value.element;
+        //set up the formField object
         formFields[value.name] = {
+          //give them a reference to the actual HTML
           html: $(fieldElement).attr(value),
+          //and all the attributes
           attributes: value
         };
       };
     }
 
+    //returns the object for a form element, based off its name attribute
+    //(not sure I like it being called fields - maybe "element" or "formField"
     var fields = function(name) {
       return formFields[name];
     };
