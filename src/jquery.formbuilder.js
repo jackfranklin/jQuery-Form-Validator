@@ -9,6 +9,12 @@
   var jFB = {
 
     init: function(json) {
+      try {
+        JSON.parse(json)
+      } catch (e) {
+        throw new Error("JSON is not valid");
+        return false;
+      }
       return this;
     }
 
