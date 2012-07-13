@@ -74,24 +74,19 @@
     var validate = function(name, validations) {
       var field = formFields[name];
       console.log(field);
-      if (!field) return false
-
+      if (!field) return false //if we dont have a field then just exist out of this one
       var vals = splitValidations(validations);
-      console.log(vals);
       //only one validation, no need to loop
       if(vals.length === 1) {
+        //grab the validation which will be the first one
         var validation = vals[0];
+        //to grab the method, split at a bracket and grab the bit before it
         var validationMethod = validations.split("(")[0];
-        console.log("field", field.attributes);
         return validationMethods[validationMethod](field.html, extractParams(validation));
-      } else {
-        //TODO: test, rewrite, etc. This is a load of crap atm
-        for(var i = 0; i < vals.length; i++) {
-          var validation = vals[i];
-          console.log(validation);
-          console.log(extractParams(validation));
-          validationMethods[validation](field.html, extractParams(validation));
-        };
+
+
+      } else { //multiple validations so need to loop or something
+        //TODO implement
       }
 
     };
@@ -114,12 +109,14 @@
     };
 
     //object that we store all the validations in - these are not passed to the API
-    //written this just as an idea of how they work - this doesn't actually do anything yet
+    //TODO write some more of these and TEST (steal from CodeIgniter?)
     var validationMethods = {
       min_length: function(obj, x) {
         return $(obj).val().length > x;
       }
     }
+
+    //TODO write method to let user write own validation methods
 
 
     //what we want to expose as the API
