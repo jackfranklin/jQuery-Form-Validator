@@ -6,9 +6,9 @@
  **/
 
 (function(window) {
-  var jFB = {
+  var jFB = (function(window) {
 
-    init: function(json) {
+    var init = function(json) {
       try {
         JSON.parse(json)
       } catch (e) {
@@ -18,8 +18,11 @@
       return this;
     }
 
-
-  };
+    //what we want to expose as the API
+    return {
+      init: init
+    };
+  })(window);
 
   window.FormBuilder = function(json) {
     return jFB.init(json);
