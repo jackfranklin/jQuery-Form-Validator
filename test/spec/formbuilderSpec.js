@@ -42,12 +42,45 @@ describe("jQuery Form Builder", function() {
         expect(validationTest.formData.validate("username", "min_length(5)")).toEqual(true);
       });
 
+      it("returns true for fields that are exactly the minimum length", function() {
+        $(validationTest.formData.fields("username").html).val("jackf");
+        expect(validationTest.formData.validate("username", "min_length(5)")).toEqual(true);
+      });
+
       it("returns false for fields that are below minimum length", function() {
         $(validationTest.formData.fields("username").html).val("j");
         expect(validationTest.formData.validate("username", "min_length(5)")).toEqual(false);
-
       });
 
+    });
+
+    describe("max_length", function() {
+      it("returns true for fields under the max length", function() {
+        $(validationTest.formData.fields("username").html).val("jackf");
+        expect(validationTest.formData.validate("username", "max_length(6)")).toEqual(true);
+      });
+
+      it("returns false for fields over the max length", function() {
+        $(validationTest.formData.fields("username").html).val("jackf");
+        expect(validationTest.formData.validate("username", "max_length(4)")).toEqual(false);
+      });
+
+      it("returns true for fields that are the maximum length", function() {
+        $(validationTest.formData.fields("username").html).val("jackf");
+        expect(validationTest.formData.validate("username", "max_length(5)")).toEqual(true);
+      });
+    });
+
+
+    describe("multiple validations", function() {
+      it("returns true for a field that passes both min & max length validations", function() {
+        $(validationTest.formData.fields("username").html).val("jackf");
+        expect(validationTest.formData.validate("username", "min_length(4)|max_length(7)")).toEqual(true);
+      });
+      it("returns false if one of the validations fails", function() {
+        $(validationTest.formData.fields("username").html).val("jackf");
+        expect(validationTest.formData.validate("username", "min_length(6)|max_length(7)")).toEqual(false);
+      });
     });
 
 

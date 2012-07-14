@@ -87,6 +87,16 @@
 
       } else { //multiple validations so need to loop or something
         //TODO implement
+        console.log(vals);
+        for(var i = 0; i < vals.length; i++) {
+          var currentVal = vals[i];
+          var validationMethod = currentVal.split("(")[0];
+          if(!validationMethods[validationMethod](field.html, extractParams(currentVal))) {
+            return false;
+          }
+        };
+        //get to end of the loop, all must have passed, return true
+        return true;
       }
 
     };
@@ -112,7 +122,10 @@
     //TODO write some more of these and TEST (steal from CodeIgniter?)
     var validationMethods = {
       min_length: function(obj, x) {
-        return $(obj).val().length > x;
+        return $(obj).val().length >= x;
+      },
+      max_length: function(obj, x) {
+        return $(obj).val().length <= x;
       }
     }
 
