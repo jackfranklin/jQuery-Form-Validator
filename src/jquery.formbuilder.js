@@ -21,6 +21,20 @@
  *
  **/
 
+/** getAttributes plugin
+ * from: http://stackoverflow.com/questions/2048720/get-all-attributes-from-a-html-element-with-javascript-jquery
+ **/
+(function($) {
+  $.fn.getAttributes = function() {
+    var attributes = {};
+    if(!this.length) return this;
+    $.each(this[0].attributes, function(index, attr) {
+      attributes[attr.name] = attr.value;
+    });
+    return attributes;
+  }
+})(jQuery);
+
 
 
 
@@ -61,6 +75,16 @@
           attributes: value
         };
       };
+      return this;
+    }
+
+    var addField = function(field) {
+      var attrs = $(field).getAttributes();
+      formFields[attrs.name] = {
+        html: $(field),
+        attributes: attrs
+      }
+      return this;
     }
 
     //returns the object for a form element, based off its name attribute
@@ -141,7 +165,8 @@
       init: init,
       generate: generate,
       fields: fields,
-      validate: validate
+      validate: validate,
+      addField: addField
     };
   })();
 

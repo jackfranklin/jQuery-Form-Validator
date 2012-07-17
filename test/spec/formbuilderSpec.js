@@ -29,6 +29,21 @@ describe("jQuery Form Builder", function() {
     });
   });
 
+  describe("adding HTML elements to the form generator", function() {
+    it("can parse a new form field from given HTML object", function() {
+      var formField = $("<input/>", {
+        type: "text",
+        name: "email",
+        class: "emailField"
+      });
+      var formData = FormBuilder(testData.formJson);
+      formData.generate().addField(formField);
+      expect(formData.fields("email")).toBeDefined();
+      expect(formData.fields("email").attributes.class).toEqual("emailField");
+    });
+
+  });
+
   describe("validation", function() {
     var validationTest = {};
     beforeEach(function() {
