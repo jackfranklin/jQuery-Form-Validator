@@ -73,7 +73,6 @@
     //TODO: only manages validations with just one parameter
     var validate = function(name, validations) {
       var field = formFields[name];
-      console.log(field);
       if (!field) return false //if we dont have a field then just exist out of this one
       var vals = splitValidations(validations);
       //only one validation, no need to loop
@@ -81,13 +80,15 @@
         //grab the validation which will be the first one
         var validation = vals[0];
         //to grab the method, split at a bracket and grab the bit before it
-        var validationMethod = validations.split("(")[0];
-        return validationMethods[validationMethod](field.html, extractParams(validation));
-
-
+        var validationMethod;
+        if(validation.indexOf("(") > -1) {
+          validationMethod = validations.split("(")[0];
+          return validationMethods[validationMethod](field.html, extractParams(validation));
+        } else {
+          validationMethod = validation;
+          return validationMethods[validationMethod](field.html)
+        }
       } else { //multiple validations so need to loop or something
-        //TODO implement
-        console.log(vals);
         for(var i = 0; i < vals.length; i++) {
           var currentVal = vals[i];
           var validationMethod = currentVal.split("(")[0];
@@ -119,13 +120,16 @@
     };
 
     //object that we store all the validations in - these are not passed to the API
-    //TODO write some more of these and TEST (steal from CodeIgniter?)
+    //these are mostly shamelessly stolen from the CodeIgniter form validation library
     var validationMethods = {
       min_length: function(obj, x) {
         return $(obj).val().length >= x;
       },
       max_length: function(obj, x) {
         return $(obj).val().length <= x;
+      },
+      required: function(obj) {
+        return $(obj).val() != "";
       }
     }
 

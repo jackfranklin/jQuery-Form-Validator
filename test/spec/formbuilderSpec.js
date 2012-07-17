@@ -71,6 +71,19 @@ describe("jQuery Form Builder", function() {
       });
     });
 
+    describe("required", function() {
+      it("returns true if the field is not empty", function() {
+        $(validationTest.formData.fields("username").html).val("jackf");
+        expect(validationTest.formData.validate("username", "required")).toEqual(true);
+        $(validationTest.formData.fields("username").html).val("0");
+        expect(validationTest.formData.validate("username", "required")).toEqual(true);
+      });
+      it("returns false if the field is empty", function() {
+        $(validationTest.formData.fields("username").html).val("");
+        expect(validationTest.formData.validate("username", "required")).toEqual(false);
+      });
+    });
+
 
     describe("multiple validations", function() {
       it("returns true for a field that passes both min & max length validations", function() {
