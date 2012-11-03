@@ -93,36 +93,22 @@
     };
 
 
-    //TODO: only manages validations with just one parameter
+    //validates a field against validation method(s)
+    //validate("username", "max_length(6)|required")
     var validate = function(name, validations) {
       var field = formFields[name];
       if (!field) return false //if we dont have a field then just exist out of this one
       var vals = splitValidations(validations);
-      //only one validation, no need to loop
-      if(vals.length === 1) {
-        //grab the validation which will be the first one
-        var validation = vals[0];
-        //to grab the method, split at a bracket and grab the bit before it
-        // if it's got a bracket, split it to get at the method name
-        if(validation.indexOf("(") > -1) {
-          var mp = extractMethodAndParams(validation);
-          return validationMethods[mp.method](field.html, mp.params);
-        } else {
-          // doesnt have a bracket so just pass it right through
-          return validationMethods[validation](field.html)
+      for(var i = 0; i < vals.length; i++) {
+        var currentValidation = vals[i];
+        var mp = extractMethodAndParams(currentValidation);
+        if(!validationMethods[mp.method]) throw new Error("Validation method " + mp.method + " does not exist");
+        if(!validationMethods[mp.method](field.html, mp.params)) {
+          return false;
         }
-      } else { //multiple validations so need to loop
-        for(var i = 0; i < vals.length; i++) {
-          var currentVal = vals[i];
-          var mp = extractMethodAndParams(currentVal);
-          if(!validationMethods[mp.method](field.html, mp.params)) {
-            return false;
-          }
-        };
-        //get to end of the loop, all must have passed, return true
-        return true;
-      }
-
+      };
+      //get to end of the loop, all must have passed, return true
+      return true;
     };
 
 
@@ -138,7 +124,7 @@
     // method: method name (string)
     // params: arguments (array)
     var extractMethodAndParams = function(validation) {
-      var grabParamsRegex = /(.+)\((.+)\)/;
+      var grabParamsRegex = /([a-zA-Z_]+)\(?([^\)]*)\)*/;
       var match = grabParamsRegex.exec(validation);
       // first match group is the method name, second is the params
       return { method: match[1], params: match[2].split(",") };
@@ -147,18 +133,21 @@
     //object that we store all the validations in - these are not passed to the API
     //these are mostly shamelessly stolen from the CodeIgniter form validation library
     var validationMethods = {
-      min_length: function(obj, x) {
-        return $(obj).val().length >= x[0];
+      min_length: function(obj, args) {
+        return $(obj).val().length >= args[0];
       },
-      max_length: function(obj, x) {
-        return $(obj).val().length <= x[0];
+      max_length: function(obj, args) {
+        return $(obj).val().length <= args[0];
       },
       required: function(obj) {
         return $(obj).val() != "";
+      },
+      length_between: function(obj, args) {
+        var len = $(obj).val().length;
+        return (len >= args[0] && args[1] >= len);
       }
     };
 
-    //TODO write method to let user write own validation methods
     var addValidationMethod = function(name, fn) {
       validationMethods[name] = fn;
     };

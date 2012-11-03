@@ -99,6 +99,21 @@ describe("jQuery Form Builder", function() {
       });
     });
 
+    describe("length_between", function() {
+      it("returns true if the length is between the two values", function() {
+        $(validationTest.formData.field("username").html).val("jackf");
+        expect(validationTest.formData.validate("username", "length_between(4,6)")).toEqual(true)
+      });
+    });
+
+    describe("throws an error if validation method does not exist", function() {
+      it("throws an error", function() {
+        expect(function() {
+          validationTest.formData.validate("username", "blahblah");
+        }).toThrow(new Error("Validation method blahblah does not exist"));
+      });
+    });
+
 
     describe("multiple validations", function() {
       it("returns true for a field that passes both min & max length validations", function() {
