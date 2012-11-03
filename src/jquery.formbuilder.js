@@ -103,19 +103,19 @@
         //grab the validation which will be the first one
         var validation = vals[0];
         //to grab the method, split at a bracket and grab the bit before it
-        var validationMethod;
+        // if it's got a bracket, split it to get at the method name
         if(validation.indexOf("(") > -1) {
-          validationMethod = validations.split("(")[0];
-          return validationMethods[validationMethod](field.html, extractParams(validation));
+          var mp = extractMethodAndParams(validation);
+          return validationMethods[mp.method](field.html, mp.params);
         } else {
-          validationMethod = validation;
-          return validationMethods[validationMethod](field.html)
+          // doesnt have a bracket so just pass it right through
+          return validationMethods[validation](field.html)
         }
-      } else { //multiple validations so need to loop or something
+      } else { //multiple validations so need to loop
         for(var i = 0; i < vals.length; i++) {
           var currentVal = vals[i];
-          var validationMethod = currentVal.split("(")[0];
-          if(!validationMethods[validationMethod](field.html, extractParams(currentVal))) {
+          var mp = extractMethodAndParams(currentVal);
+          if(!validationMethods[mp.method](field.html, mp.params)) {
             return false;
           }
         };
@@ -134,22 +134,24 @@
       }
     };
 
-    var extractParams = function(validation) {
-      //TODO must be a better way - regex to extract every thing within a bracket separated by a , - eg from (5, 4, 2) pull out [5,4,2]
-      //this hacky solution only works for one parameter
-      var params = validation.split("(");
-      var param = params[1].split(")");
-      return param[0];
+    // returns an object, with two keys
+    // method: method name (string)
+    // params: arguments (array)
+    var extractMethodAndParams = function(validation) {
+      var grabParamsRegex = /(.+)\((.+)\)/;
+      var match = grabParamsRegex.exec(validation);
+      // first match group is the method name, second is the params
+      return { method: match[1], params: match[2].split(",") };
     };
 
     //object that we store all the validations in - these are not passed to the API
     //these are mostly shamelessly stolen from the CodeIgniter form validation library
     var validationMethods = {
       min_length: function(obj, x) {
-        return $(obj).val().length >= x;
+        return $(obj).val().length >= x[0];
       },
       max_length: function(obj, x) {
-        return $(obj).val().length <= x;
+        return $(obj).val().length <= x[0];
       },
       required: function(obj) {
         return $(obj).val() != "";

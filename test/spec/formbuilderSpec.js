@@ -1,6 +1,6 @@
 describe("jQuery Form Builder", function() {
 
-  testData = {};
+  var testData = {};
   beforeEach(function() {
     testData.validJson = '{ "name" : "Jack Franklin", "Age" : 20 }';
     testData.invalidJson = '{ "Name" : Jack Franklin }';
@@ -114,7 +114,7 @@ describe("jQuery Form Builder", function() {
     describe("user can add their own validations", function() {
       it("lets the user add a validation which then works", function() {
         validationTest.formData.addValidationMethod("exact_length", function(obj, x) {
-          return $(obj).val().length == x;
+          return $(obj).val().length == x[0];
         });
         $(validationTest.formData.field("username").html).val("jackf");
         expect(validationTest.formData.validate("username", "exact_length(5)")).toEqual(true);
