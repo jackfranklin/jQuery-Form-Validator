@@ -154,9 +154,12 @@
       required: function(obj) {
         return $(obj).val() != "";
       }
-    }
+    };
 
     //TODO write method to let user write own validation methods
+    var addValidationMethod = function(name, fn) {
+      validationMethods[name] = fn;
+    };
 
 
     //what we want to expose as the API
@@ -165,7 +168,8 @@
       generate: generate,
       field: field,
       validate: validate,
-      addField: addField
+      addField: addField,
+      addValidationMethod: addValidationMethod
     };
   })();
 

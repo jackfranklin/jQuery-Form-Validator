@@ -111,6 +111,18 @@ describe("jQuery Form Builder", function() {
       });
     });
 
+    describe("user can add their own validations", function() {
+      it("lets the user add a validation which then works", function() {
+        validationTest.formData.addValidationMethod("exact_length", function(obj, x) {
+          return $(obj).val().length == x;
+        });
+        $(validationTest.formData.field("username").html).val("jackf");
+        expect(validationTest.formData.validate("username", "exact_length(5)")).toEqual(true);
+        $(validationTest.formData.field("username").html).val("jackfranklin");
+        expect(validationTest.formData.validate("username", "exact_length(5)")).toEqual(false);
+      });
+    });
+
 
   });
 });
