@@ -45,7 +45,23 @@ describe("jQuery Form Builder", function() {
       expect(formData.field("email")).toBeDefined();
       expect(formData.field("email").attributes.class).toEqual("emailField");
     });
-
+    it("can manage multiple fields at once", function() {
+      var formField1 = $("<input/>", {
+        type: "text",
+        name: "username",
+        class: "userField"
+      });
+      var formField2 = $("<input/>", {
+        type: "text",
+        name: "email",
+        class: "emailField"
+      });
+      var formData = FormBuilder();
+      var fields = formField1.add(formField2);
+      formData.addFields(fields);
+      expect(formData.field("email")).toBeDefined();
+      expect(formData.field("username").attributes.type).toEqual("text");
+    });
   });
 
   describe("validation", function() {

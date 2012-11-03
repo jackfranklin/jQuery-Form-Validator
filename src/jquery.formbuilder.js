@@ -89,6 +89,12 @@
       return this;
     }
 
+    var addFields = function(fields) {
+      for(var i = 0; i < fields.length; i++) {
+        addField(fields[i]);
+      };
+    }
+
     //returns the object for a form element, based off its name attribute
     var field = function(name) {
       return formFields[name];
@@ -162,6 +168,7 @@
       field: field,
       validate: validate,
       addField: addField,
+      addFields: addFields,
       addValidationMethod: addValidationMethod
     };
   })();
