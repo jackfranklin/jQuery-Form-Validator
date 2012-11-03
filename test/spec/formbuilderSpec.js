@@ -74,55 +74,72 @@ describe("jQuery Form Builder", function() {
     describe("min_length", function() {
       it("returns true for fields that are of the minimum length", function() {
         $(validationTest.formData.field("username").html).val("jackfranklin");
-        expect(validationTest.formData.validate("username", "min_length(5)")).toEqual(true);
-      });
-
-      it("returns true for fields that are exactly the minimum length", function() {
-        $(validationTest.formData.field("username").html).val("jackf");
-        expect(validationTest.formData.validate("username", "min_length(5)")).toEqual(true);
+        var resp = validationTest.formData.validate("username", "min_length(5)");
+        expect(resp.valid).toEqual(true);
       });
 
       it("returns false for fields that are below minimum length", function() {
         $(validationTest.formData.field("username").html).val("j");
-        expect(validationTest.formData.validate("username", "min_length(5)")).toEqual(false);
+        var resp = validationTest.formData.validate("username", "min_length(5)");
+        expect(resp.valid).toEqual(false);
+        expect(resp.messages[0]).toEqual("Field username must be at least length 5");
       });
 
     });
 
     describe("max_length", function() {
-      it("returns true for fields under the max length", function() {
+      it("returns true for values under the max length", function() {
         $(validationTest.formData.field("username").html).val("jackf");
-        expect(validationTest.formData.validate("username", "max_length(6)")).toEqual(true);
+        expect(validationTest.formData.validate("username", "max_length(6)").valid).toEqual(true);
       });
 
       it("returns false for fields over the max length", function() {
         $(validationTest.formData.field("username").html).val("jackf");
-        expect(validationTest.formData.validate("username", "max_length(4)")).toEqual(false);
-      });
-
-      it("returns true for fields that are the maximum length", function() {
-        $(validationTest.formData.field("username").html).val("jackf");
-        expect(validationTest.formData.validate("username", "max_length(5)")).toEqual(true);
+        var resp = validationTest.formData.validate("username", "max_length(4)");
+        expect(resp.valid).toEqual(false);
+        expect(resp.messages[0]).toEqual("Field username must be a maximum of 4 characters");
       });
     });
 
     describe("required", function() {
       it("returns true if the field is not empty", function() {
         $(validationTest.formData.field("username").html).val("jackf");
-        expect(validationTest.formData.validate("username", "required")).toEqual(true);
+        expect(validationTest.formData.validate("username", "required").valid).toEqual(true);
         $(validationTest.formData.field("username").html).val("0");
-        expect(validationTest.formData.validate("username", "required")).toEqual(true);
+        expect(validationTest.formData.validate("username", "required").valid).toEqual(true);
       });
       it("returns false if the field is empty", function() {
         $(validationTest.formData.field("username").html).val("");
-        expect(validationTest.formData.validate("username", "required")).toEqual(false);
+        var resp = validationTest.formData.validate("username", "required");
+        expect(resp.valid).toEqual(false);
+        expect(resp.messages[0]).toEqual("Field username is required");
       });
     });
 
     describe("length_between", function() {
       it("returns true if the length is between the two values", function() {
         $(validationTest.formData.field("username").html).val("jackf");
-        expect(validationTest.formData.validate("username", "length_between(4,6)")).toEqual(true)
+        expect(validationTest.formData.validate("username", "length_between(4,6)").valid).toEqual(true)
+      });
+
+      it("returns false if length is not inside the values", function() {
+        $(validationTest.formData.field("username").html).val("jackfranklin");
+        var resp = validationTest.formData.validate("username", "length_between(4,6)");
+        expect(resp.valid).toEqual(false);
+        expect(resp.messages[0]).toEqual("Field username must be a minimum of 4 characters and a maximum of 6");
+      });
+    });
+
+    describe("matches", function() {
+      it("returns true if the data matches", function() {
+        $(validationTest.formData.field("username").html).val("jackf");
+        expect(validationTest.formData.validate("username", "matches(jackf)").valid).toEqual(true)
+      });
+
+      it("returns false if the data doesn't match", function() {
+        $(validationTest.formData.field("username").html).val("jackfranklin");
+        var resp = validationTest.formData.validate("username", "matches(jack)");
+        expect(resp.valid).toEqual(false);
       });
     });
 
@@ -138,26 +155,49 @@ describe("jQuery Form Builder", function() {
     describe("multiple validations", function() {
       it("returns true for a field that passes both min & max length validations", function() {
         $(validationTest.formData.field("username").html).val("jackf");
-        expect(validationTest.formData.validate("username", "min_length(4)|max_length(7)")).toEqual(true);
+        var resp = validationTest.formData.validate("username", "min_length(4)|max_length(7)")
+        expect(resp.valid).toEqual(true);
       });
       it("returns false if one of the validations fails", function() {
-        $(validationTest.formData.field("username").html).val("jackf");
-        expect(validationTest.formData.validate("username", "min_length(6)|max_length(7)")).toEqual(false);
-      });
-    });
-
-    describe("user can add their own validations", function() {
-      it("lets the user add a validation which then works", function() {
-        validationTest.formData.addValidationMethod("exact_length", function(obj, x) {
-          return $(obj).val().length == x[0];
-        });
-        $(validationTest.formData.field("username").html).val("jackf");
-        expect(validationTest.formData.validate("username", "exact_length(5)")).toEqual(true);
         $(validationTest.formData.field("username").html).val("jackfranklin");
-        expect(validationTest.formData.validate("username", "exact_length(5)")).toEqual(false);
+        var resp = validationTest.formData.validate("username", "min_length(4)|max_length(7)")
+        expect(resp.messages.length).toEqual(1);
+        expect(resp.valid).toEqual(false);
       });
     });
 
+    // describe("user can add their own validations", function() {
+    //   it("lets the user add a validation which then works", function() {
+    //     validationTest.formData.addValidationMethod("exact_length", function(obj, x) {
+    //       return $(obj).val().length == x[0];
+    //     });
+    //     $(validationTest.formData.field("username").html).val("jackf");
+    //     expect(validationTest.formData.validate("username", "exact_length(5)")).toEqual(true);
+    //     $(validationTest.formData.field("username").html).val("jackfranklin");
+    //     expect(validationTest.formData.validate("username", "exact_length(5)")).toEqual(false);
+    //   });
+    // });
 
+    // describe("validations can be added and run at a later time", function() {
+    //   it("adds validations to a list", function() {
+    //     validationTest.formData.add_validation("username", "exact_length(5)");
+    //     validationTest.formData.add_validation("email", "required");
+    //     var formField = $("<input/>", {
+    //       type: "text",
+    //       name: "email",
+    //       class: "emailField"
+    //     });
+    //     validationTest.formData.addField(formField);
+
+    //     $(validationTest.formData.field("username").html).val("jackf");
+
+    //     var validationResp = validationTest.formData.run_validations();
+    //     expect(validationResp.valid).toEqual(false);
+    //     expect(validationResp.messages.length).toEqual(1);
+    //     expect(validationResp.messages[0]).toEqual("Field email is required");
+
+    //   });
+    // });
   });
+
 });

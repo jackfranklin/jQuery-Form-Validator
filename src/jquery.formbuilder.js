@@ -107,16 +107,31 @@
       var field = formFields[name];
       if (!field) return false //if we dont have a field then just exist out of this one
       var vals = splitValidations(validations);
+      var errorMessages = [];
       for(var i = 0; i < vals.length; i++) {
         var currentValidation = vals[i];
         var mp = extractMethodAndParams(currentValidation);
         if(!validationMethods[mp.method]) throw new Error("Validation method " + mp.method + " does not exist");
-        if(!validationMethods[mp.method](field.html, mp.params)) {
-          return false;
+        if(!validationMethods[mp.method].fn(field.html, mp.params)) {
+          errorMessages.push(replacePlaceholdersInMessage(validationMethods[mp.method].message, { name: name, params: mp.params }));
+
         }
       };
-      //get to end of the loop, all must have passed, return true
-      return true;
+      return { valid: !!(errorMessages < 1), messages: errorMessages };
+    };
+
+
+    var replacePlaceholdersInMessage = function(message, data) {
+      message = message.replace("%F", data.name);
+      var dataParamsLen = data.params.length;
+      if(dataParamsLen > 1) {
+        for(var i = 0; i < dataParamsLen; i++) {
+          message = message.replace("%ARGS[" + i + "]", data.params[i]);
+        }
+      } else {
+        message = message.replace("%ARG", data.params[0]);
+      }
+      return message;
     };
 
 
@@ -141,23 +156,41 @@
     //object that we store all the validations in - these are not passed to the API
     //these are mostly shamelessly stolen from the CodeIgniter form validation library
     var validationMethods = {
-      min_length: function(obj, args) {
-        return $(obj).val().length >= args[0];
+      min_length: {
+        message: "Field %F must be at least length %ARG",
+        fn: function(obj, args) {
+          return $(obj).val().length >= args[0];
+        },
       },
-      max_length: function(obj, args) {
-        return $(obj).val().length <= args[0];
+      max_length: {
+        message: "Field %F must be a maximum of %ARG characters",
+        fn: function(obj, args) {
+          return $(obj).val().length <= args[0];
+        }
       },
-      required: function(obj) {
-        return $(obj).val() != "";
+      required: {
+        message: "Field %F is required",
+        fn: function(obj) {
+          return $(obj).val() != "";
+        }
       },
-      length_between: function(obj, args) {
-        var len = $(obj).val().length;
-        return (len >= args[0] && args[1] >= len);
+      length_between: {
+        message: "Field %F must be a minimum of %ARGS[0] characters and a maximum of %ARGS[1]",
+        fn: function(obj, args) {
+          var len = $(obj).val().length;
+          return (len >= args[0] && args[1] >= len);
+        }
+      },
+      matches: {
+        message: "Field %F must match %ARG",
+        fn: function(obj, args) {
+          return $(obj).val() == args[0];
+        }
       }
     };
 
-    var addValidationMethod = function(name, fn) {
-      validationMethods[name] = fn;
+    var addValidationMethod = function(name, fn, message) {
+      validationMethods[name] = { fn: fn, message: message };
     };
 
 
