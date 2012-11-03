@@ -103,7 +103,7 @@
 
     //validates a field against validation method(s)
     //validate("username", "max_length(6)|required")
-    var validate = function(name, validations) {
+    var validateField = function(name, validations) {
       var field = formFields[name];
       if (!field) return false //if we dont have a field then just exist out of this one
       var vals = splitValidations(validations);
@@ -153,6 +153,34 @@
       return { method: match[1], params: match[2].split(",") };
     };
 
+    // object to store pending validations
+    var pendingValidations = {};
+    //method for stacking validations
+    var addValidation = function(fieldName, validations) {
+      if(pendingValidations[fieldName]) {
+        pendingValidations[fieldName] += "|" + validations;
+      } else {
+        pendingValidations[fieldName] = validations;
+      }
+    };
+    //method for clearing pending validations
+    var clearPendingValidations = function() { pendingValidations = {} };
+    //method for running validations
+    var runValidations = function() {
+      var response = { valid: true, messages: [] };
+      for(field in pendingValidations) {
+        var resp = validateField(field, pendingValidations[field]);
+        var respMessagesLen = resp.messages.length;
+        if(respMessagesLen) {
+          for(var i = 0; i < respMessagesLen; i++) {
+            response.messages.push(resp.messages[i]);
+          }
+        }
+        if(!resp.valid) response.valid = false;
+      }
+      return response;
+    };
+
     //object that we store all the validations in - these are not passed to the API
     //these are mostly shamelessly stolen from the CodeIgniter form validation library
     var validationMethods = {
@@ -193,16 +221,31 @@
       validationMethods[name] = { fn: fn, message: message };
     };
 
+    var getValidationMethod = function(name) {
+      return validationMethods[name];
+    };
+
+    var saveValidationMethod = function(name, obj) {
+      validationMethods[name] = obj;
+    };
+
 
     //what we want to expose as the API
     return {
       init: init,
       generate: generate,
       field: field,
-      validate: validate,
       addField: addField,
       addFields: addFields,
-      addValidationMethod: addValidationMethod
+      V: {
+        validateField: validateField,
+        addValidationMethod: addValidationMethod,
+        getValidationMethod: getValidationMethod,
+        saveValidationMethod: saveValidationMethod,
+        addValidation: addValidation,
+        runValidations: runValidations,
+        clearPendingValidations: clearPendingValidations,
+      }
     };
   })();
 
