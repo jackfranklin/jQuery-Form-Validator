@@ -25,7 +25,7 @@ describe("jQuery Form Builder", function() {
     it("can parse out the attributes for each input", function() {
       var formData = FormBuilder(testData.formJson);
       formData.generate();
-      expect(formData.fields("username").attributes.class).toEqual("testClass");
+      expect(formData.field("username").attributes.class).toEqual("testClass");
     });
   });
 
@@ -38,8 +38,8 @@ describe("jQuery Form Builder", function() {
       });
       var formData = FormBuilder(testData.formJson);
       formData.generate().addField(formField);
-      expect(formData.fields("email")).toBeDefined();
-      expect(formData.fields("email").attributes.class).toEqual("emailField");
+      expect(formData.field("email")).toBeDefined();
+      expect(formData.field("email").attributes.class).toEqual("emailField");
     });
 
   });
@@ -53,17 +53,17 @@ describe("jQuery Form Builder", function() {
 
     describe("min_length", function() {
       it("returns true for fields that are of the minimum length", function() {
-        $(validationTest.formData.fields("username").html).val("jackfranklin");
+        $(validationTest.formData.field("username").html).val("jackfranklin");
         expect(validationTest.formData.validate("username", "min_length(5)")).toEqual(true);
       });
 
       it("returns true for fields that are exactly the minimum length", function() {
-        $(validationTest.formData.fields("username").html).val("jackf");
+        $(validationTest.formData.field("username").html).val("jackf");
         expect(validationTest.formData.validate("username", "min_length(5)")).toEqual(true);
       });
 
       it("returns false for fields that are below minimum length", function() {
-        $(validationTest.formData.fields("username").html).val("j");
+        $(validationTest.formData.field("username").html).val("j");
         expect(validationTest.formData.validate("username", "min_length(5)")).toEqual(false);
       });
 
@@ -71,30 +71,30 @@ describe("jQuery Form Builder", function() {
 
     describe("max_length", function() {
       it("returns true for fields under the max length", function() {
-        $(validationTest.formData.fields("username").html).val("jackf");
+        $(validationTest.formData.field("username").html).val("jackf");
         expect(validationTest.formData.validate("username", "max_length(6)")).toEqual(true);
       });
 
       it("returns false for fields over the max length", function() {
-        $(validationTest.formData.fields("username").html).val("jackf");
+        $(validationTest.formData.field("username").html).val("jackf");
         expect(validationTest.formData.validate("username", "max_length(4)")).toEqual(false);
       });
 
       it("returns true for fields that are the maximum length", function() {
-        $(validationTest.formData.fields("username").html).val("jackf");
+        $(validationTest.formData.field("username").html).val("jackf");
         expect(validationTest.formData.validate("username", "max_length(5)")).toEqual(true);
       });
     });
 
     describe("required", function() {
       it("returns true if the field is not empty", function() {
-        $(validationTest.formData.fields("username").html).val("jackf");
+        $(validationTest.formData.field("username").html).val("jackf");
         expect(validationTest.formData.validate("username", "required")).toEqual(true);
-        $(validationTest.formData.fields("username").html).val("0");
+        $(validationTest.formData.field("username").html).val("0");
         expect(validationTest.formData.validate("username", "required")).toEqual(true);
       });
       it("returns false if the field is empty", function() {
-        $(validationTest.formData.fields("username").html).val("");
+        $(validationTest.formData.field("username").html).val("");
         expect(validationTest.formData.validate("username", "required")).toEqual(false);
       });
     });
@@ -102,11 +102,11 @@ describe("jQuery Form Builder", function() {
 
     describe("multiple validations", function() {
       it("returns true for a field that passes both min & max length validations", function() {
-        $(validationTest.formData.fields("username").html).val("jackf");
+        $(validationTest.formData.field("username").html).val("jackf");
         expect(validationTest.formData.validate("username", "min_length(4)|max_length(7)")).toEqual(true);
       });
       it("returns false if one of the validations fails", function() {
-        $(validationTest.formData.fields("username").html).val("jackf");
+        $(validationTest.formData.field("username").html).val("jackf");
         expect(validationTest.formData.validate("username", "min_length(6)|max_length(7)")).toEqual(false);
       });
     });

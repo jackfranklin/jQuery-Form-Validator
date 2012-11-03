@@ -1,7 +1,6 @@
 /**
  * jQuery Form Builder
- * Written by Jack Franklin and Ben Everard
- * requires jQuery
+ * Written by Jack Franklin
  *
  * https://github.com/jackfranklin/jquery-form-builder
  **/
@@ -58,21 +57,22 @@
     }
 
     var generate = function() {
-      jsonItems = formJson.fields;
+      var jsonItems = formJson.fields;
+      var jsonItemsLen = jsonItems.length;
       //loop through all the fields
-      for(var i = 0; i < jsonItems.length; i++) {
-        var value = jsonItems[i];
+      for(var i = 0; i < jsonItemsLen; i++) {
+        var attributes = jsonItems[i];
         //now we have all the attributes, we can make an element out of this
         //store the element type (as in the HTML element)
-        var fieldElement = value.element;
+        var fieldElement = attributes.element;
         //then delete it so the attributes object doesn't contain the HTML element
-        delete value.element;
+        delete attributes.element;
         //set up the formField object
-        formFields[value.name] = {
+        formFields[attributes.name] = {
           //give them a reference to the actual HTML
-          html: $(document.createElement(fieldElement)).attr(value),
+          html: $(document.createElement(fieldElement)).attr(attributes),
           //and all the attributes
-          attributes: value
+          attributes: attributes
         };
       };
       return this;
@@ -88,8 +88,7 @@
     }
 
     //returns the object for a form element, based off its name attribute
-    //(not sure I like it being called fields - maybe "element" or "formField"
-    var fields = function(name) {
+    var field = function(name) {
       return formFields[name];
     };
 
@@ -164,7 +163,7 @@
     return {
       init: init,
       generate: generate,
-      fields: fields,
+      field: field,
       validate: validate,
       addField: addField
     };
