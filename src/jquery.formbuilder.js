@@ -47,11 +47,13 @@
     var formFields = {};
 
     var init = function(json) {
-      try {
-        formJson = JSON.parse(json)
-      } catch (e) {
-        throw new Error("JSON is not valid");
-        return false;
+      if(json) {
+        try {
+          formJson = JSON.parse(json)
+        } catch (e) {
+          throw new Error("JSON is not valid");
+          return false;
+        }
       }
       return this;
     }

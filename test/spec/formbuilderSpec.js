@@ -21,6 +21,10 @@ describe("jQuery Form Builder", function() {
     expect(window.FormBuilder(testData.validJson)).toBeTruthy();
   });
 
+  it("does not throw an error if no JSON is passed in", function() {
+    expect(window.FormBuilder()).toBeTruthy();
+  });
+
   describe("generating the fields", function() {
     it("can parse out the attributes for each input", function() {
       var formData = FormBuilder(testData.formJson);
