@@ -28,6 +28,10 @@ And you set up your validator and add some validations:
 var userForm = window.FormValidator();
 //add the fields of your form to the builder
 userForm.addFields($("input[type='text']"));
+
+//now add some validations
+userForm.addValidation("username", "min_length(6)|required");
+userForm.addValidation("shortname", "max_length(5)");
 ```
 
 Then when the form is submitted, see if those validations pass or not:
