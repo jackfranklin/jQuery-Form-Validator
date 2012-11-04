@@ -223,7 +223,6 @@ describe("jQuery Form Validator", function() {
       it("can add validations for same field multiple times", function() {
         validationTest.addValidation("username", { exact_length: 5 });
         validationTest.addValidation("username", { matches: "jackf" });
-        console.log(validationTest.getPendingValidations());
 
         // check that its valid
         $(validationTest.field("username").html).val("jackf");

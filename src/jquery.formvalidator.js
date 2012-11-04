@@ -12,12 +12,12 @@
 (function($) {
   $.fn.getAttributes = function() {
     var attributes = {};
-    if(!this.length) return this;
+    if(!this.length) { return this; }
     $.each(this[0].attributes, function(index, attr) {
       attributes[attr.name] = attr.value;
     });
     return attributes;
-  }
+  };
 })(jQuery);
 
 (function(window) {
@@ -28,9 +28,9 @@
     // lets fields be passed in on init
 
     var init = function(fields) {
-      fields && addFields(fields);
+      if(fields) { addFields(fields); }
       return this;
-    }
+    };
     // store all fields in an object
     var formFields = {};
 
@@ -39,14 +39,14 @@
       formFields[attrs.name] = {
         html: $(field),
         attributes: attrs
-      }
-    }
+      };
+    };
 
     var addFields = function(fields) {
       for(var i = 0; i < fields.length; i++) {
         addField(fields[i]);
-      };
-    }
+      }
+    };
 
     //returns the object for a form element, based off its name attribute
     var field = function(name) {
@@ -59,13 +59,13 @@
     var validateField = function(name, validations) {
       var field = formFields[name];
       var fieldValue = field.html.val();
-      if (!field) return false //if we dont have a field then just exit out of this one
+      if (!field) { return false; } //if we dont have a field then just exit out of this one
 
       var errorMessages = [];
       for(var validation in validations) {
         var method = validationMethods[validation];
         var params = validations[validation];
-        if(!method) throw new Error("Validation method " + validation + " does not exist");
+        if(!method) { throw new Error("Validation method " + validation + " does not exist"); }
         if(!method.fn(fieldValue, params, field.html)) {
           errorMessages.push(replacePlaceholdersInMessage(method.message, { name: name, params: params }));
         }
@@ -99,7 +99,7 @@
     // method to return pending validations
     var getPendingValidations = function() {
       return pendingValidations;
-    }
+    };
 
     //method for stacking validations
     var addValidation = function(fieldName, validations) {
@@ -115,7 +115,7 @@
 
 
     //method for clearing pending validations
-    var clearPendingValidations = function() { pendingValidations = {} };
+    var clearPendingValidations = function() { pendingValidations = {}; };
 
 
     //method for running validations
@@ -125,7 +125,7 @@
 
       var response = { valid: true, messages: [] };
 
-      for(field in pendingValidations) {
+      for(var field in pendingValidations) {
         //validate the field
         var resp = validateField(field, pendingValidations[field]);
         var respMessagesLen = resp.messages.length;
@@ -134,7 +134,7 @@
             response.messages.push(resp.messages[i]);
           }
         }
-        if(!resp.valid) response.valid = false;
+        if(!resp.valid) { response.valid = false; }
       }
 
       if(clearAfter) { clearPendingValidations(); }
@@ -154,7 +154,7 @@
         message: "Field %F must be at least length %ARG",
         fn: function(val, arg) {
           return val.length >= arg;
-        },
+        }
       },
       max_length: {
         message: "Field %F must be a maximum of %ARG characters",
@@ -165,7 +165,7 @@
       required: {
         message: "Field %F is required",
         fn: function(val) {
-          return val != "";
+          return val !== "";
         }
       },
       //this takes two arguments, the min and max length, so the arguments here are an array.
@@ -179,7 +179,7 @@
       matches: {
         message: "Field %F must match %ARG",
         fn: function(val, arg) {
-          return val == arg;
+          return val === arg;
         }
       }
     };
