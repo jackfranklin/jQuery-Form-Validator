@@ -2,7 +2,7 @@
  * jQuery Form Validator
  * Written by Jack Franklin
  *
- * https://github.com/jackfranklin/jquery-form-builder
+ * https://github.com/jackfranklin/jQuery-Form-Validator
  **/
 
 
