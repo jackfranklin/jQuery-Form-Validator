@@ -72,18 +72,18 @@
 
 
     var replacePlaceholdersInMessage = function(message, data) {
-      message = message.replace("%F", data.name);
+      message = message.replace(/%F/g, data.name);
       var dataParams = data.params;
       // if it is an array of multiple params, we loop through and replace each
       if( Object.prototype.toString.call(dataParams) === '[object Array]' ) {
         //array of multiple parameters
         var dataParamsLen = dataParams.length;
         for(var i = 0; i < dataParamsLen; i++) {
-          message = message.replace("%ARGS[" + i + "]", data.params[i]);
+          message = message.replace(new RegExp('%ARGS\\['+i+'\\]', "g"), data.params[i]);
         }
       } else {
         //just one so replace it
-        message = message.replace("%ARG", dataParams);
+        message = message.replace(/%ARG/g, dataParams);
       }
       return message;
     };
