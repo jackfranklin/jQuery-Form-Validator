@@ -22,6 +22,7 @@
 
 (function(window) {
   var jFV = (function() {
+    var VERSION = 0.1;
 
 
     //store each field in this array - quicker to store them all rather than keep grabbing JSON
@@ -179,6 +180,7 @@
 
     //what we want to expose as the API
     return {
+      VERSION: VERSION,
       field: field,
       addField: addField,
       addFields: addFields,
