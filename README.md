@@ -157,6 +157,8 @@ Runs all pending validations, returning a response object that's identical to `v
 
 If you pass in an argument of `true`, it clears the pending validations object completely.
 
+The response is like so:
+
 ```javascript
 {
   valid: true,
