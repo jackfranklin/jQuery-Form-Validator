@@ -25,7 +25,7 @@
     var VERSION = 0.1;
 
 
-    //store each field in this array - quicker to store them all rather than keep grabbing JSON
+    // store all fields in an object
     var formFields = {};
 
     var addField = function(field) {
@@ -53,19 +53,22 @@
     //validateField("username", "max_length(6)|required")
     var validateField = function(name, validations) {
       var field = formFields[name];
-      if (!field) return false //if we dont have a field then just exist out of this one
+      if (!field) return false //if we dont have a field then just exit out of this one
+
+      // split the validations up into an array
       var vals = splitValidations(validations);
       var errorMessages = [];
       for(var i = 0; i < vals.length; i++) {
         var currentValidation = vals[i];
         var mp = extractMethodAndParams(currentValidation);
-        if(!validationMethods[mp.method]) throw new Error("Validation method " + mp.method + " does not exist");
-        if(!validationMethods[mp.method].fn(field.html, mp.params)) {
-          errorMessages.push(replacePlaceholdersInMessage(validationMethods[mp.method].message, { name: name, params: mp.params }));
+        var method = validationMethods[mp.method];
+        if(!method) throw new Error("Validation method " + mp.method + " does not exist");
+        if(!method.fn(field.html, mp.params)) {
+          errorMessages.push(replacePlaceholdersInMessage(method.message, { name: name, params: mp.params }));
 
         }
       };
-      return { valid: !!(errorMessages < 1), messages: errorMessages };
+      return { valid: (errorMessages.length < 1), messages: errorMessages };
     };
 
 
@@ -84,11 +87,7 @@
 
 
     var splitValidations = function(validations) {
-      if(validations.indexOf("|") > -1) {
-        return validations.split("|");
-      } else {
-        return [validations];
-      }
+      return validations.split("|");
     };
 
     // returns an object, with two keys
@@ -103,6 +102,7 @@
 
     // object to store pending validations
     var pendingValidations = {};
+
     //method for stacking validations
     var addValidation = function(fieldName, validations) {
       if(pendingValidations[fieldName]) {
@@ -129,8 +129,7 @@
       return response;
     };
 
-    //object that we store all the validations in - these are not passed to the API
-    //these are mostly shamelessly stolen from the CodeIgniter form validation library
+    //object that we store all the validations in - this object is not exposed publically
     var validationMethods = {
       min_length: {
         message: "Field %F must be at least length %ARG",
