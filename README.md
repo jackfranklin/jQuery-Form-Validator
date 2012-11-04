@@ -1,6 +1,6 @@
 ## jQuery Form Validator
 
-## Version 0.3
+## Version 0.4
 
 I got bored of using other people's validators that didn't work just as I wanted.
 
@@ -25,13 +25,14 @@ The basic idea goes, that you have a HTML form:
 And you set up your validator and add some validations:
 
 ```javascript
-var userForm = window.FormValidator();
-//add the fields of your form to the builder
-userForm.addFields($("input[type='text']"));
+var userForm = window.FormValidator($("input[type='text']"));
 
-//now add some validations
-userForm.addValidation("username", "min_length(6)|required");
-userForm.addValidation("shortname", "max_length(5)");
+//add your validations
+userForm.addValidation("username", {
+  min_length: 6,
+  required: true
+});
+userForm.addValidation("shortname", { max_length: 5 });
 ```
 
 Then when the form is submitted, see if those validations pass or not:
@@ -58,15 +59,15 @@ $("form").on("submit", function(e) {
 You can add your own validation methods too:
 
 ```javascript
-.addValidationMethod("exact_length", function(obj, x) {
-  return $(obj).val().length == x[0];
+.addValidationMethod("exact_length", function(obj, arg) {
+  return $(obj).val().length == arg;
 }, "Field %F has to be %ARG characters");
 ```
 
 These are further documented below.
 
 
-Once a field is added, you can also get at its attributes and the DOM element (not something you'll do much, but might come in handy):
+Once a field is added, you can also get at its attributes and a jQuery object containing the element (not particularly useful but may come in handy).
 
 ```javascript
 console.log(userForm.field("username").attributes); //=> { name: "username" type: "text" }
@@ -124,10 +125,14 @@ var signupForm = FormValidator(foo);
 ### Adding and Running Validations
 
 #### `validateField(name, validations)` returns `Object`
-Takes the field name and a string of validations, and runs them, returning the response. For example:
+Takes the field name and an object of validations, and runs them, returning the response. For example:
 
 ```javascript
-validateField("username", "min_length(5)|required");
+validateField("username", {
+  min_length: 5,
+  required: true
+});
+
 //returns
 {
   valid: true, //if the validations passed or failed
@@ -139,18 +144,23 @@ validateField("username", "min_length(5)|required");
 Works identically to `validateField` with one key exception. It adds a validation but _doesn't_ run it. You can also add multiple validations in two different ways. Either:
 
 ```javascript
-addValidation("username", "min_length(5)|required");
+addValidation("username", {
+  min_length: 5,
+  required: true
+});
 ```
 
 or
 
 ```javascript
-addValidation("username", "min_length(5)");
-addValidation("username", "required");
+addValidation("username", { min_length: 5 });
+addValidation("username", { required: true });
 ```
 
+The first is preferred but the second may be useful if you need to programatically add validations at different times.
+
 #### `clearPendingValidations()`
-Clears all pending validations so none remain. Note that currently, this is __never__ done automatically for you. Pending validations survive even once `runValidations` has been called.
+Clears all pending validations so none remain.
 
 #### `runValidations(clearAfter)` returns `Object`
 Runs all pending validations, returning a response object that's identical to `validateField`. Unlike `validateField`, this runs all pending validations on the _entire form_, across _all fields_.
@@ -171,8 +181,13 @@ Returns the pending validations as a key-value object, with the key being the fi
 
 ```javascript
 {
-  username: "min_length(4)|required",
-  email: "max_length(20)"
+  username: {
+    min_length: 4,
+    required: true
+  },
+  email: {
+    max_length: 20
+  }
 }
 ```
 
@@ -198,7 +213,7 @@ There's also methods to add validations.
 
 `fn` is the function that's run to test the validation. It's passed three arguments:
 - the value of the field you're validating against
-- an array of parameters it was called with
+- the parameter(s) it's called with
 - a jQuery object containing the field
 
 It's unlikely you'll ever use the third parameter, but it's there if you need it. A validation method just needs to return true or false.
@@ -206,14 +221,24 @@ It's unlikely you'll ever use the third parameter, but it's there if you need it
 For example, the `min_length` validation function looks like so:
 
 ```javascript
-function(val, args) {
-  return val.length >= args[0];
+function(val, arg) {
+  return val.length >= arg;
 },
 ```
 
-Notice how I don't even bother referencing the 3rd argument, as I wont need it. Usually just the field's value is all you'll need.
+Because I know `min_length` will only take one argument, I can just reference the variable passed in. Validation methods are only passed in an array of arguments if they take more than one. If they only take one, that one value is passed in. Compare the above to the `length_inbetween` validator:
 
-Even if the validation only takes one argument, the args argument is _always_ an array.
+```javascript
+length_between: {
+  message: "Field %F must be a minimum of %ARGS[0] characters and a maximum of %ARGS[1]",
+  fn: function(val, args) {
+    var len = val.length;
+    return (len >= args[0] && args[1] >= len);
+  }
+}
+```
+
+Notice how I don't even bother referencing the 3rd argument, as I wont need it. Usually just the field's value is all you'll need.
 
 `message` is the error message that is returned if the validation fails. This is just a string, but it has a couple of placeholders. `%F` is used to show where the field name will go in the string.
 
@@ -232,12 +257,12 @@ Field %F must be a minimum of %ARGS[0] characters and a maximum of %ARGS[1]
 Here's an example of how I'd add an `exact_length` validator:
 
 ```javascript
-addValidationMethod("exact_length", function(val, args) {
-  return val.length == args[0];
+addValidationMethod("exact_length", function(val, arg) {
+  return val.length == arg;
 }, "Field %F has to be %ARG characters");
 ```
 
-Which could then be used as `"exact_length(6)"`.
+Which could then be used as `{ exact_length: 6 }`
 
 ### Changing Validation Messages
 It's likely that you might want to change the built in messages that come out of the box. You can do this through two methods:
@@ -252,8 +277,8 @@ Returns:
 ```javascript
 {
   message: "Field %F must match %ARG",
-  fn: function(val, args) {
-    return val == args[0];
+  fn: function(val, arg) {
+    return val == arg;
   }
 }
 ```
@@ -265,8 +290,8 @@ Pass in the validation name and an object to save it:
 ```javascript
 var new_matches = {
   message: "Field %F must equal %ARG",
-  fn: function(val, args) {
-    return val == args[0];
+  fn: function(val, arg) {
+    return val == arg;
   }
 }
 
@@ -290,6 +315,22 @@ If you make a pull request, please write tests for it :)
 - test and document cross-browser support
 
 ## Changelist
+
+__Version 0.4__
+- made it onto Hacker News!
+- thanks to a suggestion on there, ditched using strings for validations and switched to JS objects, which make much more sense. So, instead of:
+
+```javascript
+addValidation("username", "min_length(5)|required");
+```
+
+It's now:
+
+```javascript
+addValidation("username", { min_length: 5, required: true });
+```
+
+A few things have changed as a by-product of this - please do read the docs carefully. Any questions please ask away!
 
 __Version 0.3__
 - rewrote the validation methods so they are passed in three arguments: `value, args, obj`. Realised most methods will only care about the field value, so pass that in directly rather than just the object to streamline the validation methods. Object is passed in as 3rd argument if it is needed.

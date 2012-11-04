@@ -1,12 +1,12 @@
 $(function() {
-  var userForm = window.FormValidator();
-
-  //add the fields of your form to the builder
-  userForm.addFields($("input[type='text']"));
+  var userForm = window.FormValidator($("input[type='text']"));
 
   //add your validations
-  userForm.addValidation("username", "min_length(6)|required");
-  userForm.addValidation("shortname", "max_length(5)");
+  userForm.addValidation("username", {
+    min_length: 6,
+    required: true
+  });
+  userForm.addValidation("shortname", { max_length: 5 });
 
   $("form").on("submit", function(e) {
     $("ul").html("");
