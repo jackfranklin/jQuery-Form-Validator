@@ -49,7 +49,7 @@
 
 
     //validates a field against validation method(s)
-    //validate("username", "max_length(6)|required")
+    //validateField("username", "max_length(6)|required")
     var validateField = function(name, validations) {
       var field = formFields[name];
       if (!field) return false //if we dont have a field then just exist out of this one

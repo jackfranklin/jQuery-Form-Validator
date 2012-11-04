@@ -30,7 +30,7 @@ userForm.addFields($("input[type='text']"));
 
 Then when the form is submitted, see if those validations pass or not:
 
-```
+```javascript
 $("form").on("submit", function(e) {
     $("ul").html("");
     e.preventDefault();
@@ -71,8 +71,68 @@ console.log(userForm.field("username").html); //=> [ <input type="text" name="us
 
 If anything's not clear, the best place to look is the tests. Every public method is tested in there.
 
+### Dealing with Fields
+
 #### `addField(field)`
-Adds a field to the form validator, that you can then validate against. Argument can either be any valid CSS selector (any that you would pass into jQuery), or a jQuery object. If the jQuery object has multiple elements, only the first will be saved.
+Adds a field to the form validator, that you can then validate against. Argument can either be any valid CSS selector (any that you would pass into jQuery), or a jQuery object. If the jQuery object has multiple elements, only the first will be saved. Field is added to the internal fields object, which are index by the field's `name` attribute.
+
+#### `addFields(fields)`
+Same as `addField`, but handles multiple elements passed in. Either pass in an array of CSS selectors, or a jQuery object.
+
+#### `field(name)` returns `Object`
+Pass in a string which is the name of the field, and you get an object back representing it. Rarely useful. Response:
+
+```javascript
+{
+  html: [ <input type="text" name="foobar" /> ],
+  attributes: {
+    type: "text",
+    name: "foobar"
+  }
+}
+```
+
+### Validation Methods
+
+#### `validateField(name, validations)` returns `Object`
+Takes the field name and a string of validations, and runs them, returning the response. For example:
+
+```javascript
+validateField("username", "min_length(5)|required");
+//returns
+{
+  valid: true, //if the validations passed or failed
+  messages: [] //any error messages that were returned
+}
+```
+
+#### `addValidation(name, validations)`
+Works identically to `validateField` with one key exception. It adds a validation but _doesn't_ run it. You can also add multiple validations in two different ways. Either:
+
+```javascript
+addValidation("username", "min_length(5)|required");
+```
+
+or
+
+```javascript
+addValidation("username", "min_length(5)");
+addValidation("username", "required");
+```
+
+#### `clearPendingValidations()`
+Clears all pending validations so none remain.
+
+#### `runValidations` returns `Object`
+Runs all pending validations, returning a response object that's identical to `validateField`. Unlike `validateField`, this runs all pending validations on the _entire form_, across _all fields_.
+{
+  valid: true,
+  messages: []
+}
+
+
+
+
 
 
 ## Tests
