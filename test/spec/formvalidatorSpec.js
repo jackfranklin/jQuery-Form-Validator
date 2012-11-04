@@ -1,4 +1,4 @@
-describe("jQuery Form Builder", function() {
+describe("jQuery Form Validator", function() {
 
   var testData = {};
   beforeEach(function() {
