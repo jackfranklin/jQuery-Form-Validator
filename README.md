@@ -71,6 +71,9 @@ console.log(userForm.field("username").html); //=> [ <input type="text" name="us
 
 If anything's not clear, the best place to look is the tests. Every public method is tested in there.
 
+#### `addField(field)`
+Adds a field to the form validator, that you can then validate against. Argument can either be any valid CSS selector (any that you would pass into jQuery), or a jQuery object. If the jQuery object has multiple elements, only the first will be saved.
+
 
 ## Tests
 
