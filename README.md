@@ -292,7 +292,7 @@ If you make a pull request, please write tests for it :)
 ## Changelist
 
 __Version 0.3__
--rewrote the validation methods so they are passed in three arguments: `value, args, obj`. Realised most methods will only care about the field value, so pass that in directly rather than just the object to streamline the validation methods. Object is passed in as 3rd argument if it is needed.
+- rewrote the validation methods so they are passed in three arguments: `value, args, obj`. Realised most methods will only care about the field value, so pass that in directly rather than just the object to streamline the validation methods. Object is passed in as 3rd argument if it is needed.
 
 __Version 0.2__
 - ability to add fields through the `FormValidator` method.
