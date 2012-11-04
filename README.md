@@ -232,10 +232,12 @@ Field %F must be a minimum of %ARGS[0] characters and a maximum of %ARGS[1]
 Here's an example of how I'd add an `exact_length` validator:
 
 ```javascript
-addValidationMethod("exact_length", function(val, x) {
-  return val.length == x[0];
+addValidationMethod("exact_length", function(val, args) {
+  return val.length == args[0];
 }, "Field %F has to be %ARG characters");
 ```
+
+Which could then be used as `"exact_length(6)"`.
 
 ### Changing Validation Messages
 It's likely that you might want to change the built in messages that come out of the box. You can do this through two methods:
