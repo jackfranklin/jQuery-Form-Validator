@@ -1,4 +1,4 @@
-/*! jQuery Form Validator - v0.4.0 - 2012-11-04
+/*! jQuery Form Validator - v0.5.0 - 2012-11-04
 * https://github.com/jackfranklin/jQuery-Form-Validator
 * Copyright (c) 2012 Jack Franklin; */
 
@@ -18,7 +18,7 @@
 
 (function(window) {
   var jFV = (function() {
-    var VERSION = 0.4;
+    var VERSION = "0.5.0";
 
 
     // lets fields be passed in on init

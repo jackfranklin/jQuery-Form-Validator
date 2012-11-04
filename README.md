@@ -1,7 +1,5 @@
 ## jQuery Form Validator
 
-## Version 0.4
-
 I got bored of using other people's validators that didn't work just as I wanted.
 
 So I created one.
@@ -300,21 +298,42 @@ saveValidationMethod("matches", new_matches);
 
 And that's it! A good place to start is `demo/demo.js`, which has a plain example to get you going in the right direction.
 
-## Tests
+## Contributing
 
-The project is tested with Jasmine - there's tests in `test`. Load up `SpecRunner.html` in your browser to see the green passes.
+This project uses Grunt JS for testing, linting and delpoying.
+
+Install Grunt JS: `npm install -g grunt`
+
+Then clone and cd into this repository and run `npm install`.
+
+Now you should be able to run `grunt` to lint, test, concatenate and minify.
+
+Tests are written in Jasmine and can be tested with `grunt jasmine`.
+
+You can run linting with `grunt lint`.
+
+Run lints and tests with `grunt test`.
 
 If you make a pull request, please write tests for it :)
 
+#### Contributors
+
+- @jackfranklin
+- @joshstrange
+
 ## Todo
 
-- Integrate into Grunt.JS
 - Add more validation methods
 - Add NodeJS support
 - Add AMD support
 - test and document cross-browser support
 
 ## Changelist
+
+__Version 0.5__
+- Fixed a typo in the README - thanks @joshstrange
+- use Regex to replace within messages - thanks @joshstrange
+- Integrated into Grunt JS (see section on Contributing)
 
 __Version 0.4__
 - made it onto Hacker News!

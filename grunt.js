@@ -56,6 +56,7 @@ module.exports = function(grunt) {
 
   // Default task.
   grunt.registerTask('default', 'lint jasmine concat min');
+  grunt.registerTask('test', 'lint jasmine');
   grunt.loadNpmTasks('grunt-jasmine-task');
 
 };

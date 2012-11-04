@@ -22,7 +22,7 @@
 
 (function(window) {
   var jFV = (function() {
-    var VERSION = 0.4;
+    var VERSION = "0.5.0";
 
 
     // lets fields be passed in on init
