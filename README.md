@@ -151,8 +151,10 @@ addValidation("username", "required");
 #### `clearPendingValidations()`
 Clears all pending validations so none remain. Note that currently, this is __never__ done automatically for you. Pending validations survive even once `runValidations` has been called.
 
-#### `runValidations` returns `Object`
+#### `runValidations(clearAfter)` returns `Object`
 Runs all pending validations, returning a response object that's identical to `validateField`. Unlike `validateField`, this runs all pending validations on the _entire form_, across _all fields_.
+
+If you pass in an argument of `true`, it clears the pending validations object completely.
 
 ```javascript
 {
@@ -160,6 +162,19 @@ Runs all pending validations, returning a response object that's identical to `v
   messages: []
 }
 ```
+
+#### `getPendingValidations` returns `Object`
+Returns the pending validations as a key-value object, with the key being the field name, and the value being the validation string. Sample response:
+
+```javascript
+{
+  username: "min_length(4)|required",
+  email: "max_length(20)"
+}
+```
+
+Not used particularly often.
+
 
 ### Validation Methods
 
