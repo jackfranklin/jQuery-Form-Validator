@@ -10,33 +10,33 @@ describe("jQuery Form Validator", function() {
       var formField = $("<input/>", {
         type: "text",
         name: "email",
-        class: "emailField"
+        "class": "emailField"
       });
       var form = window.FormValidator(formField);
       expect(form.field("email")).toBeDefined();
-      expect(form.field("email").attributes.class).toEqual("emailField");
+      expect(form.field("email").attributes["class"]).toEqual("emailField");
     });
     it("can parse a new form field from given HTML object", function() {
       var formField = $("<input/>", {
         type: "text",
         name: "email",
-        class: "emailField"
+        "class": "emailField"
       });
       var form = FormValidator();
       form.addField(formField)
       expect(form.field("email")).toBeDefined();
-      expect(form.field("email").attributes.class).toEqual("emailField");
+      expect(form.field("email").attributes["class"]).toEqual("emailField");
     });
     it("can manage multiple fields at once", function() {
       var formField1 = $("<input/>", {
         type: "text",
         name: "username",
-        class: "userField"
+        "class": "userField"
       });
       var formField2 = $("<input/>", {
         type: "text",
         name: "email",
-        class: "emailField"
+        "class": "emailField"
       });
       var form = FormValidator();
       var fields = formField1.add(formField2);
@@ -194,7 +194,7 @@ describe("jQuery Form Validator", function() {
         var formField = $("<input/>", {
           type: "text",
           name: "email",
-          class: "emailField"
+          "class": "emailField"
         });
         validationTest.formData.addField(formField);
 

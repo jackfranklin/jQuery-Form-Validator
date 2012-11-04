@@ -1,6 +1,6 @@
 ## jQuery Form Validator
 
-## Version 0.1
+## Version 0.2
 
 I got bored of using other people's validators that didn't work just as I wanted.
 
