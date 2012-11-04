@@ -59,8 +59,8 @@ $("form").on("submit", function(e) {
 You can add your own validation methods too:
 
 ```javascript
-.addValidationMethod("exact_length", function(obj, arg) {
-  return $(obj).val().length == arg;
+.addValidationMethod("exact_length", function(val, arg) {
+  return val.length == arg;
 }, "Field %F has to be %ARG characters");
 ```
 
