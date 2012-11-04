@@ -3,7 +3,7 @@
   <head>
     <title>jQuery Form Builder Demo</title>
     <script src="../lib/jquery.js"></script>
-    <script src="../src/jquery.formbuilder.js"></script>
+    <script src="../src/jquery.formvalidator.js"></script>
     <script src="demo.js"></script>
   </head>
   <body>
@@ -12,6 +12,8 @@
       Short Name: <input type="text" name="shortname" />
       <input type="submit" value="go" />
     </form>
+    <p>The username field is required and must be at least 6 characters long</p>
+    <p>The shortname field is not required, but must be less than 6 characters long</p>
     <h3></h3>
     <ul></ul>
   </body>

@@ -1,17 +1,18 @@
 $(function() {
-  var userForm = window.FormBuilder();
+  var userForm = window.FormValidator();
 
   //add the fields of your form to the builder
   userForm.addFields($("input[type='text']"));
 
   //add your validations
-  userForm.V.addValidation("username", "min_length(6)|required");
-  userForm.V.addValidation("shortname", "max_length(5)");
+  userForm.addValidation("username", "min_length(6)|required");
+  userForm.addValidation("shortname", "max_length(5)");
 
   $("form").on("submit", function(e) {
+    $("ul").html("");
     e.preventDefault();
     //now run your validations
-    var validationResult = userForm.V.runValidations();
+    var validationResult = userForm.runValidations();
     if(validationResult.valid) {
       $("h3").text("form validated!");
     } else {
