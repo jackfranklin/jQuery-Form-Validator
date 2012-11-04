@@ -1,24 +1,10 @@
 /**
- * jQuery Form Builder
+ * jQuery Form Validator
  * Written by Jack Franklin
  *
  * https://github.com/jackfranklin/jquery-form-builder
  **/
 
-
-/**
- * sample JSON structure
- * var json = {
- *  "fields" : [
- *    {
- *      "name": "username",
- *      "type": "text",
- *      "validations": "min_length(5)"
- *    }
- *  ]
- *}
- *
- **/
 
 /** getAttributes plugin
  * from: http://stackoverflow.com/questions/2048720/get-all-attributes-from-a-html-element-with-javascript-jquery
@@ -34,51 +20,12 @@
   }
 })(jQuery);
 
-
-
-
 (function(window) {
-  var jFB = (function() {
+  var jFV = (function() {
 
-    //store the form's JSON
-    var formJson;
 
     //store each field in this array - quicker to store them all rather than keep grabbing JSON
     var formFields = {};
-
-    var init = function(json) {
-      if(json) {
-        try {
-          formJson = JSON.parse(json)
-        } catch (e) {
-          throw new Error("JSON is not valid");
-          return false;
-        }
-      }
-      return this;
-    }
-
-    var generate = function() {
-      var jsonItems = formJson.fields;
-      var jsonItemsLen = jsonItems.length;
-      //loop through all the fields
-      for(var i = 0; i < jsonItemsLen; i++) {
-        var attributes = jsonItems[i];
-        //now we have all the attributes, we can make an element out of this
-        //store the element type (as in the HTML element)
-        var fieldElement = attributes.element;
-        //then delete it so the attributes object doesn't contain the HTML element
-        delete attributes.element;
-        //set up the formField object
-        formFields[attributes.name] = {
-          //give them a reference to the actual HTML
-          html: $(document.createElement(fieldElement)).attr(attributes),
-          //and all the attributes
-          attributes: attributes
-        };
-      };
-      return this;
-    }
 
     var addField = function(field) {
       var attrs = $(field).getAttributes();
@@ -232,25 +179,21 @@
 
     //what we want to expose as the API
     return {
-      init: init,
-      generate: generate,
       field: field,
       addField: addField,
       addFields: addFields,
-      V: {
-        validateField: validateField,
-        addValidationMethod: addValidationMethod,
-        getValidationMethod: getValidationMethod,
-        saveValidationMethod: saveValidationMethod,
-        addValidation: addValidation,
-        runValidations: runValidations,
-        clearPendingValidations: clearPendingValidations,
-      }
+      validateField: validateField,
+      addValidationMethod: addValidationMethod,
+      getValidationMethod: getValidationMethod,
+      saveValidationMethod: saveValidationMethod,
+      addValidation: addValidation,
+      runValidations: runValidations,
+      clearPendingValidations: clearPendingValidations,
     };
   })();
 
-  window.FormBuilder = function(json) {
-    return jFB.init(json);
+  window.FormValidator = function() {
+    return jFV;
   };
 
 })(window);
