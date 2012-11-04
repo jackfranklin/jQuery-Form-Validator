@@ -22,9 +22,15 @@
 
 (function(window) {
   var jFV = (function() {
-    var VERSION = 0.1;
+    var VERSION = 0.2;
 
 
+    // lets fields be passed in on init
+
+    var init = function(fields) {
+      fields && addFields(fields);
+      return this;
+    }
     // store all fields in an object
     var formFields = {};
 
@@ -34,7 +40,6 @@
         html: $(field),
         attributes: attrs
       }
-      return this;
     }
 
     var addFields = function(fields) {
@@ -103,6 +108,11 @@
     // object to store pending validations
     var pendingValidations = {};
 
+    // method to return pending validations
+    var getPendingValidations = function() {
+      return pendingValidations;
+    }
+
     //method for stacking validations
     var addValidation = function(fieldName, validations) {
       if(pendingValidations[fieldName]) {
@@ -114,7 +124,9 @@
     //method for clearing pending validations
     var clearPendingValidations = function() { pendingValidations = {} };
     //method for running validations
-    var runValidations = function() {
+    var runValidations = function(clearAfter) {
+      //ensure it's boolean true or false
+      clearAfter = !!clearAfter || false;
       var response = { valid: true, messages: [] };
       for(field in pendingValidations) {
         var resp = validateField(field, pendingValidations[field]);
@@ -126,6 +138,7 @@
         }
         if(!resp.valid) response.valid = false;
       }
+      if(clearAfter) { clearPendingValidations(); }
       return response;
     };
 
@@ -180,6 +193,7 @@
     //what we want to expose as the API
     return {
       VERSION: VERSION,
+      init: init,
       field: field,
       addField: addField,
       addFields: addFields,
@@ -190,11 +204,12 @@
       addValidation: addValidation,
       runValidations: runValidations,
       clearPendingValidations: clearPendingValidations,
+      getPendingValidations: getPendingValidations
     };
   })();
 
-  window.FormValidator = function() {
-    return jFV;
+  window.FormValidator = function(fields) {
+    return jFV.init(fields);
   };
 
 })(window);

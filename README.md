@@ -108,6 +108,18 @@ Pass in a string which is the name of the field, and you get an object back repr
 }
 ```
 
+You can combine the adding of fields with the initial step. For example, instead of:
+
+```javascript
+var signupForm = FormValidator();
+signupForm.addFields(foo);
+```
+
+You can do:
+
+```javascript
+var signupForm = FormValidator(foo);
+
 ### Adding and Running Validations
 
 #### `validateField(name, validations)` returns `Object`
@@ -137,7 +149,7 @@ addValidation("username", "required");
 ```
 
 #### `clearPendingValidations()`
-Clears all pending validations so none remain.
+Clears all pending validations so none remain. Note that currently, this is __never__ done automatically for you. Pending validations survive even once `runValidations` has been called.
 
 #### `runValidations` returns `Object`
 Runs all pending validations, returning a response object that's identical to `validateField`. Unlike `validateField`, this runs all pending validations on the _entire form_, across _all fields_.
@@ -248,5 +260,10 @@ If you make a pull request, please write tests for it :)
 
 ## Changelist
 
-__4th Nov__
+__Version 0.2__
+- ability to add fields through the `FormValidator` method.
+- `runValidations` takes optional argument which, if set to true, will clear pending validations once run.
+- added `getPendingValidations` method.
+
+__Version 0.1__
 - first release!

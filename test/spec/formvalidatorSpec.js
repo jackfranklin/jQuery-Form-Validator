@@ -6,6 +6,16 @@ describe("jQuery Form Validator", function() {
   });
 
   describe("adding HTML elements", function() {
+    it("can set up fields passed into it when initialised", function() {
+      var formField = $("<input/>", {
+        type: "text",
+        name: "email",
+        class: "emailField"
+      });
+      var form = window.FormValidator(formField);
+      expect(form.field("email")).toBeDefined();
+      expect(form.field("email").attributes.class).toEqual("emailField");
+    });
     it("can parse a new form field from given HTML object", function() {
       var formField = $("<input/>", {
         type: "text",
@@ -171,10 +181,12 @@ describe("jQuery Form Validator", function() {
     });
 
 
+
     describe("validations can be added and run at a later time", function() {
       beforeEach(function() {
         validationTest.formData.clearPendingValidations();
       });
+
 
       it("adds validations to a list", function() {
         validationTest.formData.addValidation("username", "exact_length(5)");
@@ -215,6 +227,31 @@ describe("jQuery Form Validator", function() {
         expect(validationResp.valid).toEqual(false);
         expect(validationResp.messages.length).toEqual(1);
 
+      });
+
+      it("provides a method to access pending validations", function() {
+        validationTest.formData.addValidation("username", "exact_length(5)");
+        validationTest.formData.addValidation("email", "required");
+        var pending = validationTest.formData.getPendingValidations();
+        expect(pending.username).toEqual("exact_length(5)");
+        expect(pending.email).toEqual("required");
+      });
+
+      it("lets runValidations be given a flag to clear pending validations", function() {
+        validationTest.formData.addValidation("username", "exact_length(5)");
+        validationTest.formData.addValidation("username", "matches(jackf)");
+        $(validationTest.formData.field("username").html).val("jackf");
+        var validationResp = validationTest.formData.runValidations();
+
+        //now check pending validations still exist
+        var pending = validationTest.formData.getPendingValidations();
+        expect(pending.username).toEqual("exact_length(5)|matches(jackf)");
+
+        //run again with flag
+        validationTest.formData.runValidations(true);
+        //now check pending validations are empty
+        var pending = validationTest.formData.getPendingValidations();
+        expect(pending.username).not.toBeDefined();
       });
     });
   });
