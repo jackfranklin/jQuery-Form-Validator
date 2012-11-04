@@ -119,6 +119,7 @@ You can do:
 
 ```javascript
 var signupForm = FormValidator(foo);
+```
 
 ### Adding and Running Validations
 
