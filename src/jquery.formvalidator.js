@@ -22,7 +22,7 @@
 
 (function(window) {
   var jFV = (function() {
-    var VERSION = 0.3;
+    var VERSION = 0.4;
 
 
     // lets fields be passed in on init
@@ -55,25 +55,21 @@
 
 
     //validates a field against validation method(s)
-    //validateField("username", "max_length(6)|required")
+    //validateField("username", { max_length: 6, required: true })
     var validateField = function(name, validations) {
       var field = formFields[name];
       var fieldValue = field.html.val();
       if (!field) return false //if we dont have a field then just exit out of this one
 
-      // split the validations up into an array
-      var vals = splitValidations(validations);
       var errorMessages = [];
-      for(var i = 0; i < vals.length; i++) {
-        var currentValidation = vals[i];
-        var mp = extractMethodAndParams(currentValidation);
-        var method = validationMethods[mp.method];
-        if(!method) throw new Error("Validation method " + mp.method + " does not exist");
-        if(!method.fn(fieldValue, mp.params, field.html)) {
-          errorMessages.push(replacePlaceholdersInMessage(method.message, { name: name, params: mp.params }));
-
+      for(var validation in validations) {
+        var method = validationMethods[validation];
+        var params = validations[validation];
+        if(!method) throw new Error("Validation method " + validation + " does not exist");
+        if(!method.fn(fieldValue, params, field.html)) {
+          errorMessages.push(replacePlaceholdersInMessage(method.message, { name: name, params: params }));
         }
-      };
+      }
       return { valid: (errorMessages.length < 1), messages: errorMessages };
     };
 
@@ -81,31 +77,21 @@
 
     var replacePlaceholdersInMessage = function(message, data) {
       message = message.replace("%F", data.name);
-      var dataParamsLen = data.params.length;
-      if(dataParamsLen > 1) {
+      var dataParams = data.params;
+      // if it is an array of multiple params, we loop through and replace each
+      if( Object.prototype.toString.call(dataParams) === '[object Array]' ) {
+        //array of multiple parameters
+        var dataParamsLen = dataParams.length;
         for(var i = 0; i < dataParamsLen; i++) {
           message = message.replace("%ARGS[" + i + "]", data.params[i]);
         }
       } else {
-        message = message.replace("%ARG", data.params[0]);
+        //just one so replace it
+        message = message.replace("%ARG", dataParams);
       }
       return message;
     };
 
-
-    var splitValidations = function(validations) {
-      return validations.split("|");
-    };
-
-    // returns an object, with two keys
-    // method: method name (string)
-    // params: arguments (array)
-    var extractMethodAndParams = function(validation) {
-      var grabParamsRegex = /([a-zA-Z_]+)\(?([^\)]*)\)*/;
-      var match = grabParamsRegex.exec(validation);
-      // first match group is the method name, second is the params
-      return { method: match[1], params: match[2].split(",") };
-    };
 
     // object to store pending validations
     var pendingValidations = {};
@@ -118,19 +104,29 @@
     //method for stacking validations
     var addValidation = function(fieldName, validations) {
       if(pendingValidations[fieldName]) {
-        pendingValidations[fieldName] += "|" + validations;
+        //some already exist, so loop through and apply the new ones onto the existing object
+        for(var newValidation in validations) {
+          pendingValidations[fieldName][newValidation] = validations[newValidation];
+        }
       } else {
         pendingValidations[fieldName] = validations;
       }
     };
+
+
     //method for clearing pending validations
     var clearPendingValidations = function() { pendingValidations = {} };
+
+
     //method for running validations
     var runValidations = function(clearAfter) {
       //ensure it's boolean true or false
       clearAfter = !!clearAfter || false;
+
       var response = { valid: true, messages: [] };
+
       for(field in pendingValidations) {
+        //validate the field
         var resp = validateField(field, pendingValidations[field]);
         var respMessagesLen = resp.messages.length;
         if(respMessagesLen) {
@@ -140,22 +136,30 @@
         }
         if(!resp.valid) response.valid = false;
       }
+
       if(clearAfter) { clearPendingValidations(); }
+
       return response;
     };
 
     //object that we store all the validations in - this object is not exposed publically
+    //validation methods are passed in three things: value, argument(s), object
+    //value = the value of the field
+    //argument(s) = the arguments of the method. Is an array if it's more than one, or just a string/int/boolean for just one
+    //object = jQuery ref to field
+
     var validationMethods = {
+      // takes just one argument, which is the integer denoting min length
       min_length: {
         message: "Field %F must be at least length %ARG",
-        fn: function(val, args) {
-          return val.length >= args[0];
+        fn: function(val, arg) {
+          return val.length >= arg;
         },
       },
       max_length: {
         message: "Field %F must be a maximum of %ARG characters",
-        fn: function(val, args) {
-          return val.length <= args[0];
+        fn: function(val, arg) {
+          return val.length <= arg;
         }
       },
       required: {
@@ -164,6 +168,7 @@
           return val != "";
         }
       },
+      //this takes two arguments, the min and max length, so the arguments here are an array.
       length_between: {
         message: "Field %F must be a minimum of %ARGS[0] characters and a maximum of %ARGS[1]",
         fn: function(val, args) {
@@ -173,23 +178,24 @@
       },
       matches: {
         message: "Field %F must match %ARG",
-        fn: function(val, args) {
-          return val == args[0];
+        fn: function(val, arg) {
+          return val == arg;
         }
       }
     };
 
+    //TODO: don't like having both of these - just get rid of one and keep the other?
     var addValidationMethod = function(name, fn, message) {
       validationMethods[name] = { fn: fn, message: message };
+    };
+    var saveValidationMethod = function(name, obj) {
+      validationMethods[name] = obj;
     };
 
     var getValidationMethod = function(name) {
       return validationMethods[name];
     };
 
-    var saveValidationMethod = function(name, obj) {
-      validationMethods[name] = obj;
-    };
 
 
     //what we want to expose as the API
