@@ -22,7 +22,7 @@
 
 (function(window) {
   var jFV = (function() {
-    var VERSION = 0.2;
+    var VERSION = 0.3;
 
 
     // lets fields be passed in on init
@@ -58,6 +58,7 @@
     //validateField("username", "max_length(6)|required")
     var validateField = function(name, validations) {
       var field = formFields[name];
+      var fieldValue = field.html.val();
       if (!field) return false //if we dont have a field then just exit out of this one
 
       // split the validations up into an array
@@ -68,13 +69,14 @@
         var mp = extractMethodAndParams(currentValidation);
         var method = validationMethods[mp.method];
         if(!method) throw new Error("Validation method " + mp.method + " does not exist");
-        if(!method.fn(field.html, mp.params)) {
+        if(!method.fn(fieldValue, mp.params, field.html)) {
           errorMessages.push(replacePlaceholdersInMessage(method.message, { name: name, params: mp.params }));
 
         }
       };
       return { valid: (errorMessages.length < 1), messages: errorMessages };
     };
+
 
 
     var replacePlaceholdersInMessage = function(message, data) {
@@ -146,33 +148,33 @@
     var validationMethods = {
       min_length: {
         message: "Field %F must be at least length %ARG",
-        fn: function(obj, args) {
-          return $(obj).val().length >= args[0];
+        fn: function(val, args) {
+          return val.length >= args[0];
         },
       },
       max_length: {
         message: "Field %F must be a maximum of %ARG characters",
-        fn: function(obj, args) {
-          return $(obj).val().length <= args[0];
+        fn: function(val, args) {
+          return val.length <= args[0];
         }
       },
       required: {
         message: "Field %F is required",
-        fn: function(obj) {
-          return $(obj).val() != "";
+        fn: function(val) {
+          return val != "";
         }
       },
       length_between: {
         message: "Field %F must be a minimum of %ARGS[0] characters and a maximum of %ARGS[1]",
-        fn: function(obj, args) {
-          var len = $(obj).val().length;
+        fn: function(val, args) {
+          var len = val.length;
           return (len >= args[0] && args[1] >= len);
         }
       },
       matches: {
         message: "Field %F must match %ARG",
-        fn: function(obj, args) {
-          return $(obj).val() == args[0];
+        fn: function(val, args) {
+          return val == args[0];
         }
       }
     };

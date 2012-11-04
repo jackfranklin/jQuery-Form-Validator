@@ -50,6 +50,12 @@ describe("jQuery Form Validator", function() {
     var validationTest = {};
     beforeEach(function() {
       validationTest.formData = FormValidator();
+      var field = $("<input/>", {
+        type: "text",
+        name: "username",
+        "class": "userField"
+      });
+      validationTest.formData.addField(field);
     });
 
     describe("min_length", function() {
@@ -159,8 +165,8 @@ describe("jQuery Form Validator", function() {
     describe("user can add their own validations", function() {
       it("lets the user add a validation which then works", function() {
 
-        validationTest.formData.addValidationMethod("exact_length", function(obj, x) {
-          return $(obj).val().length == x[0];
+        validationTest.formData.addValidationMethod("exact_length", function(val, x) {
+          return val.length == x[0];
         }, "Field %F has to be %ARG characters");
         $(validationTest.formData.field("username").html).val("jackf");
         expect(validationTest.formData.validateField("username", "exact_length(5)").valid).toEqual(true);

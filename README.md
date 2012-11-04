@@ -1,6 +1,6 @@
 ## jQuery Form Validator
 
-## Version 0.2
+## Version 0.3
 
 I got bored of using other people's validators that didn't work just as I wanted.
 
@@ -196,13 +196,22 @@ There's also methods to add validations.
 #### `addValidationMethod(name, fn, message)`
 `name` is the name you'll refer to when adding validations to a field.
 
-`fn` is the function that's run to test the validation. It's passed two arguments, the HTML element and the parameters it was called with as an array. For example, the `min_length` validation function looks like so:
+`fn` is the function that's run to test the validation. It's passed three arguments:
+- the value of the field you're validating against
+- an array of parameters it was called with
+- a jQuery object containing the field
+
+It's unlikely you'll ever use the third parameter, but it's there if you need it. A validation method just needs to return true or false.
+
+For example, the `min_length` validation function looks like so:
 
 ```javascript
-function(obj, args) {
-  return $(obj).val().length >= args[0];
+function(val, args) {
+  return val.length >= args[0];
 },
 ```
+
+Notice how I don't even bother referencing the 3rd argument, as I wont need it. Usually just the field's value is all you'll need.
 
 Even if the validation only takes one argument, the args argument is _always_ an array.
 
@@ -223,8 +232,8 @@ Field %F must be a minimum of %ARGS[0] characters and a maximum of %ARGS[1]
 Here's an example of how I'd add an `exact_length` validator:
 
 ```javascript
-addValidationMethod("exact_length", function(obj, x) {
-  return $(obj).val().length == x[0];
+addValidationMethod("exact_length", function(val, x) {
+  return val.length == x[0];
 }, "Field %F has to be %ARG characters");
 ```
 
@@ -241,8 +250,8 @@ Returns:
 ```javascript
 {
   message: "Field %F must match %ARG",
-  fn: function(obj, args) {
-    return $(obj).val() == args[0];
+  fn: function(val, args) {
+    return val == args[0];
   }
 }
 ```
@@ -250,11 +259,12 @@ Returns:
 #### `saveValidationMethod(name, obj)`
 
 Pass in the validation name and an object to save it:
+
 ```javascript
 var new_matches = {
   message: "Field %F must equal %ARG",
-  fn: function(obj, args) {
-    return $(obj).val() == args[0];
+  fn: function(val, args) {
+    return val == args[0];
   }
 }
 
@@ -275,8 +285,12 @@ If you make a pull request, please write tests for it :)
 - Add more validation methods
 - Add NodeJS support
 - Add AMD support
+- test and document cross-browser support
 
 ## Changelist
+
+__Version 0.3__
+-rewrote the validation methods so they are passed in three arguments: `value, args, obj`. Realised most methods will only care about the field value, so pass that in directly rather than just the object to streamline the validation methods. Object is passed in as 3rd argument if it is needed.
 
 __Version 0.2__
 - ability to add fields through the `FormValidator` method.
