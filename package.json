@@ -1,0 +1,19 @@
+{
+  "name": "jquery.formvalidator",
+  "title": "jQuery Form Validator",
+  "description": "A Form Validator library",
+  "version": "0.4.0",
+  "homepage": "https://github.com/jackfranklin/jQuery-Form-Validator",
+  "author": {
+    "name": "Jack Franklin",
+    "email": "jack@jackfranklin.net",
+    "url": "www.javascriptplayground.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:jackfranklin/jQuery-Form-Validator.git"
+  },
+  "dependencies": {
+    "jquery": "~1.8"
+  }
+}
