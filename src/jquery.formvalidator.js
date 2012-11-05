@@ -70,7 +70,7 @@
           errorMessages.push(replacePlaceholdersInMessage(method.message, { name: name, params: params }));
         }
       }
-      return { valid: (errorMessages.length == 0)?true:false, field: field, messages: errorMessages };
+      return { valid: !(errorMessage.length), field: field, messages: errorMessages };
     };
 
 
@@ -132,7 +132,7 @@
         }
       }
       if(clearAfter) { clearPendingValidations(); }
-      return { valid: (Object.keys(fields).length == 0)?true:false, fields: fields };
+      return { valid: !Object.keys(fields).length, fields: fields };
     };
 
     //object that we store all the validations in - this object is not exposed publically
