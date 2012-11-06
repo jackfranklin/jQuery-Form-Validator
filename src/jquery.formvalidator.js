@@ -22,7 +22,7 @@
 
 (function(window) {
   var jFV = (function() {
-    var VERSION = "0.5.0";
+    var VERSION = "0.6.0";
 
 
     // lets fields be passed in on init
@@ -63,7 +63,7 @@
 
       var errorMessages = [];
       for(var validation in validations) {
-        var method = validationMethods[validation];
+        var method = getValidationMethod(validation);
         var params = validations[validation];
         if(!method) { throw new Error("Validation method " + validation + " does not exist"); }
         if(!method.fn(fieldValue, params, field.html)) {
@@ -124,15 +124,15 @@
       clearAfter = !!clearAfter || false;
 
       var fields = {};
+      var isValid = true;
       for(var field in pendingValidations) {
         //validate the field
         var resp = validateField(field, pendingValidations[field]);
-        if(!resp.valid) {
-          fields[field] = { field: resp.field, messages: resp.messages, valid: !resp.messages.length };
-        }
+        fields[field] = { field: resp.field, messages: resp.messages, valid: resp.valid, html: resp.field.html };
       }
       if(clearAfter) { clearPendingValidations(); }
-      return { valid: !Object.keys(fields).length, fields: fields, allMessages: getAllErrors(fields) };
+      var allErrors = getAllErrors(fields);
+      return { valid: !allErrors.length, fields: fields, messages: getAllErrors(fields) };
     };
 
     /*fields object looks like:

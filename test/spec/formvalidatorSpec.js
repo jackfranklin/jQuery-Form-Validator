@@ -236,16 +236,19 @@ describe("jQuery Form Validator", function() {
 
         var validationResp = validationTest.runValidations();
         expect(validationResp.valid).toEqual(false);
-        expect(validationResp.allMessages.length).toEqual(2);
+        expect(validationResp.messages.length).toEqual(2);
         expect(validationResp.fields.email.messages.length).toEqual(1);
         expect(validationResp.fields.username.valid).toEqual(false);
       });
       it("can add validations for same field multiple times", function() {
+        validationTest.addValidationMethod("exact_length", function(val, arg) {
+          return val.length == arg;
+        }, "Field %F has to be %ARG characters");
         validationTest.addValidation("username", { exact_length: 5 });
         validationTest.addValidation("username", { matches: "jackf" });
 
         // check that its valid
-        $(validationTest.field("username").html).val("jackf");
+        validationTest.field("username").html.val("jackf");
         var validationResp = validationTest.runValidations();
         expect(validationResp.valid).toEqual(true);
 

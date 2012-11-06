@@ -8,7 +8,7 @@ This is _not_ a jQuery plugin, but does depend on jQuery.
 
 ## Demo
 
-There's a demo included in the `demo/` folder.
+There's a demo included in the `demo/` folder. If you're not sure on the documentation, you should look at the demo first. It contains a pretty solid example on how to use the library. All the main methods are also covered in the tests, so between this document, the demo and the tests, you should be set. Any problems, raise an issue or tweet @Jack_Franklin.
 
 The basic idea goes, that you have a HTML form:
 
@@ -36,22 +36,30 @@ userForm.addValidation("shortname", { max_length: 5 });
 Then when the form is submitted, see if those validations pass or not:
 
 ```javascript
-$("form").on("submit", function(e) {
-    $("ul").html("");
-    e.preventDefault();
-    //now run your validations
-    var validationResult = userForm.runValidations();
-    if(validationResult.valid) {
-      $("h3").text("form validated!");
-    } else {
-      $("h3").text("Errors");
-      for(var i = 0; i < validationResult.messages.length; i++) {
-        var newLi = $("<li />", {
-          text: validationResult.messages[i]
-        }).appendTo("ul");
-      }
+var validationResult = userForm.runValidations();
+if(validationResult.valid) {
+  $("h3").text("form validated!");
+} else {
+  //you might just want to loop through all errors from all fields and display them:
+  $("h3").text("All Errors:");
+  for(var i = 0; i < validationResult.messages.length; i++) {
+    var newLi = $("<li />", {
+      text: validationResult.messages[i]
+    }).appendTo("ul");
+  }
+
+  //or loop through the errors for each field, and add them just after the field in a span tag:
+  for(var field in validationResult.fields) {
+    var fieldObj = validationResult.fields[field];
+    if(!fieldObj.valid) {
+      var errorSpan = $("<span />", {
+        "class" : "error",
+        "text" : fieldObj.messages.join(", ")
+      });
+      fieldObj.html.after(errorSpan);
     }
-  });
+  }
+}
 ```
 
 You can add your own validation methods too:
@@ -161,7 +169,10 @@ The first is preferred but the second may be useful if you need to programatical
 Clears all pending validations so none remain.
 
 #### `runValidations(clearAfter)` returns `Object`
-Runs all pending validations, returning a response object that's identical to `validateField`. Unlike `validateField`, this runs all pending validations on the _entire form_, across _all fields_.
+
+__New in 0.6:__ returns a more complex object with each field's messages individually, along with the field's jQuery object.
+
+Runs all pending validations, returning a response object.
 
 If you pass in an argument of `true`, it clears the pending validations object completely.
 
@@ -169,8 +180,22 @@ The response is like so:
 
 ```javascript
 {
-  valid: true,
-  messages: []
+  valid: true, //boolean true or false, if the entire validation set was valid
+  messages: [], //array of error messages of all fields combined
+  fields: {
+    username: {
+      field: { //the same object you would get from calling yourForm.field("username")
+        html: [ <input type="text" name="username" /> ],
+        attributes: {
+          type: "text",
+          name: "username"
+        }
+      },
+      messages: [], //error messages for just that field
+      valid: true, //boolean true/false for if THAT field was valid or not
+      html: [ <input type="text" name="username" />] //jQuery object for that field. A shortcut to the html property of the field object
+    }
+  }
 }
 ```
 
@@ -329,6 +354,9 @@ If you make a pull request, please write tests for it :)
 - test and document cross-browser support
 
 ## Changelist
+
+__Version 0.6__
+- changed the response object to return each field and its error messages indidividually - thanks @joshstrange for the initial idea and some of the code.
 
 __Version 0.5__
 - Fixed a typo in the README - thanks @joshstrange

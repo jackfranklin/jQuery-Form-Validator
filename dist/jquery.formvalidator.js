@@ -1,4 +1,4 @@
-/*! jQuery Form Validator - v0.5.0 - 2012-11-04
+/*! jQuery Form Validator - v0.6.0 - 2012-11-06
 * https://github.com/jackfranklin/jQuery-Form-Validator
 * Copyright (c) 2012 Jack Franklin; */
 
@@ -18,7 +18,7 @@
 
 (function(window) {
   var jFV = (function() {
-    var VERSION = "0.5.0";
+    var VERSION = "0.6.0";
 
 
     // lets fields be passed in on init
@@ -59,14 +59,14 @@
 
       var errorMessages = [];
       for(var validation in validations) {
-        var method = validationMethods[validation];
+        var method = getValidationMethod(validation);
         var params = validations[validation];
         if(!method) { throw new Error("Validation method " + validation + " does not exist"); }
         if(!method.fn(fieldValue, params, field.html)) {
           errorMessages.push(replacePlaceholdersInMessage(method.message, { name: name, params: params }));
         }
       }
-      return { valid: (errorMessages.length < 1), messages: errorMessages };
+      return { valid: !(errorMessages.length), field: field, messages: errorMessages };
     };
 
 
@@ -119,23 +119,33 @@
       //ensure it's boolean true or false
       clearAfter = !!clearAfter || false;
 
-      var response = { valid: true, messages: [] };
-
+      var fields = {};
+      var isValid = true;
       for(var field in pendingValidations) {
         //validate the field
         var resp = validateField(field, pendingValidations[field]);
-        var respMessagesLen = resp.messages.length;
-        if(respMessagesLen) {
-          for(var i = 0; i < respMessagesLen; i++) {
-            response.messages.push(resp.messages[i]);
-          }
-        }
-        if(!resp.valid) { response.valid = false; }
+        fields[field] = { field: resp.field, messages: resp.messages, valid: resp.valid, html: resp.field.html };
       }
-
       if(clearAfter) { clearPendingValidations(); }
+      var allErrors = getAllErrors(fields);
+      return { valid: !allErrors.length, fields: fields, messages: getAllErrors(fields) };
+    };
 
-      return response;
+    /*fields object looks like:
+     * var fields = {
+     *    username: {
+     *      field: [ jQuery obj],
+     *      messages: [ array of error messages ],
+     *      valid: true/false // if that field passed its validations
+     *      }
+     *    }
+     */
+    var getAllErrors = function(fieldsObj) {
+      var allErrors = [];
+      for(var field in fieldsObj) {
+        allErrors = allErrors.concat(fieldsObj[field].messages);
+      }
+      return allErrors;
     };
 
     //object that we store all the validations in - this object is not exposed publically
