@@ -70,7 +70,7 @@
           errorMessages.push(replacePlaceholdersInMessage(method.message, { name: name, params: params }));
         }
       }
-      return { valid: (errorMessages.length < 1), messages: errorMessages };
+      return { valid: !(errorMessages.length), field: field, messages: errorMessages };
     };
 
 
@@ -123,23 +123,16 @@
       //ensure it's boolean true or false
       clearAfter = !!clearAfter || false;
 
-      var response = { valid: true, messages: [] };
-
+      var fields = {};
       for(var field in pendingValidations) {
         //validate the field
         var resp = validateField(field, pendingValidations[field]);
-        var respMessagesLen = resp.messages.length;
-        if(respMessagesLen) {
-          for(var i = 0; i < respMessagesLen; i++) {
-            response.messages.push(resp.messages[i]);
-          }
+        if(!resp.valid) {
+          fields[field] = { field: resp.field, messages: resp.messages};
         }
-        if(!resp.valid) { response.valid = false; }
       }
-
       if(clearAfter) { clearPendingValidations(); }
-
-      return response;
+      return { valid: !Object.keys(fields).length, fields: fields };
     };
 
     //object that we store all the validations in - this object is not exposed publically

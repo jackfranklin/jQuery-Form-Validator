@@ -216,8 +216,8 @@ describe("jQuery Form Validator", function() {
 
         var validationResp = validationTest.runValidations();
         expect(validationResp.valid).toEqual(false);
-        expect(validationResp.messages.length).toEqual(1);
-        expect(validationResp.messages[0]).toEqual("Field email is required");
+        expect(validationResp.fields["email"].messages.length).toEqual(1);
+        expect(validationResp.fields["email"].messages[0]).toEqual("Field email is required");
       });
 
       it("can add validations for same field multiple times", function() {
@@ -233,13 +233,13 @@ describe("jQuery Form Validator", function() {
         $(validationTest.field("username").html).val("jackfranklin");
         validationResp = validationTest.runValidations();
         expect(validationResp.valid).toEqual(false);
-        expect(validationResp.messages.length).toEqual(2);
+        expect(validationResp.fields["username"].messages.length).toEqual(2);
 
         //now check its invalid if just one fails
         $(validationTest.field("username").html).val("jackd");
         validationResp = validationTest.runValidations();
         expect(validationResp.valid).toEqual(false);
-        expect(validationResp.messages.length).toEqual(1);
+        expect(validationResp.fields["username"].messages.length).toEqual(1);
 
       });
 
