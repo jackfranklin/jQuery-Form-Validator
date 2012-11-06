@@ -128,11 +128,20 @@
         //validate the field
         var resp = validateField(field, pendingValidations[field]);
         if(!resp.valid) {
-          fields[field] = { field: resp.field, messages: resp.messages};
+          fields[field] = { field: resp.field, messages: resp.messages, valid: !resp.messages.length };
         }
       }
       if(clearAfter) { clearPendingValidations(); }
       return { valid: !Object.keys(fields).length, fields: fields };
+    };
+
+    /*fields object looks like:
+     * var fields = {
+     *    username: {
+     *
+     *
+     */
+    var getAllErrors = function(fieldsObj) {
     };
 
     //object that we store all the validations in - this object is not exposed publically
