@@ -132,16 +132,24 @@
         }
       }
       if(clearAfter) { clearPendingValidations(); }
-      return { valid: !Object.keys(fields).length, fields: fields };
+      return { valid: !Object.keys(fields).length, fields: fields, allMessages: getAllErrors(fields) };
     };
 
     /*fields object looks like:
      * var fields = {
      *    username: {
-     *
-     *
+     *      field: [ jQuery obj],
+     *      messages: [ array of error messages ],
+     *      valid: true/false // if that field passed its validations
+     *      }
+     *    }
      */
     var getAllErrors = function(fieldsObj) {
+      var allErrors = [];
+      for(var field in fieldsObj) {
+        allErrors = allErrors.concat(fieldsObj[field].messages);
+      }
+      return allErrors;
     };
 
     //object that we store all the validations in - this object is not exposed publically

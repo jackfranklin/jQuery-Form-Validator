@@ -221,6 +221,25 @@ describe("jQuery Form Validator", function() {
         expect(validationResp.fields["email"].valid).toEqual(false);
       });
 
+      it("returns an allMessages property that has messages for all fields", function() {
+        var formField = $("<input/>", {
+          type: "text",
+          name: "email",
+          "class": "emailField"
+        });
+        validationTest.addField(formField);
+        validationTest.addValidation("username", { min_length: 5 });
+        validationTest.addValidation("email", { min_length: 6 });
+
+        validationTest.field("username").html.val("jack");
+        validationTest.field("email").html.val("jack");
+
+        var validationResp = validationTest.runValidations();
+        expect(validationResp.valid).toEqual(false);
+        expect(validationResp.allMessages.length).toEqual(2);
+        expect(validationResp.fields.email.messages.length).toEqual(1);
+        expect(validationResp.fields.username.valid).toEqual(false);
+      });
       it("can add validations for same field multiple times", function() {
         validationTest.addValidation("username", { exact_length: 5 });
         validationTest.addValidation("username", { matches: "jackf" });
