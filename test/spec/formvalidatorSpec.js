@@ -1,6 +1,4 @@
 describe("jQuery Form Validator", function() {
-
-
   it("sets up the global FormValidator object and returns it", function() {
     expect(window.FormValidator()).toBeTruthy()
   });
@@ -203,7 +201,7 @@ describe("jQuery Form Validator", function() {
 
 
       it("adds validations to a list", function() {
-        validationTest.addValidation("username", { exact_length: 5 });
+        validationTest.addValidation("username", { min_length: 5 });
         validationTest.addValidation("email", { required: true });
         var formField = $("<input/>", {
           type: "text",
@@ -276,6 +274,9 @@ describe("jQuery Form Validator", function() {
       });
 
       it("lets runValidations be given a flag to clear pending validations", function() {
+        validationTest.addValidationMethod("exact_length", function(val, arg) {
+          return val.length == arg;
+        }, "Field %F has to be %ARG characters");
         validationTest.addValidation("username", { exact_length: 5 });
         validationTest.addValidation("username", { matches: "jackf" });
         $(validationTest.field("username").html).val("jackf");
@@ -291,6 +292,28 @@ describe("jQuery Form Validator", function() {
         var pending = validationTest.getPendingValidations();
         expect(pending.username).not.toBeDefined();
       });
+    });
+  });
+  describe("validating checkboxes", function() {
+    var form;
+    beforeEach(function() {
+      var field = $("<input />", {
+        type: "checkbox",
+        name: "yesno"
+      });
+      form = FormValidator(field);
+    });
+
+    it("passes required validation when checked", function(){
+      form.field("yesno").html.prop("checked", true);
+      var resp = form.validateField("yesno", { required: true });
+      expect(resp.valid).toEqual(true);
+    });
+
+    it("fails required validation when checked", function(){
+      form.field("yesno").html.prop("checked", false);
+      var resp = form.validateField("yesno", { required: true });
+      expect(resp.valid).toEqual(false);
     });
   });
 
