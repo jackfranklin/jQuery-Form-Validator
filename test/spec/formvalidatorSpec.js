@@ -171,9 +171,12 @@ describe("jQuery Form Validator", function() {
     describe("user can add their own validations", function() {
       it("lets the user add a validation which then works", function() {
 
-        validationTest.addValidationMethod("exact_length", function(val, arg) {
-          return val.length == arg;
-        }, "Field %F has to be %ARG characters");
+        validationTest.addValidationMethod("exact_length", {
+          fn: function(val, arg) {
+            return val.length === arg;
+          },
+          message: "Field %F has to be %ARG characters"
+        });
         $(validationTest.field("username").html).val("jackf");
         expect(validationTest.validateField("username", { exact_length: 5 }).valid).toEqual(true);
 
@@ -185,7 +188,7 @@ describe("jQuery Form Validator", function() {
       it("allows users to edit the error messages of validations", function() {
         var min_length = validationTest.getValidationMethod("min_length");
         min_length.message = "Field %F has to be at least %ARG characters";
-        validationTest.saveValidationMethod("min_length", min_length);
+        validationTest.addValidationMethod("min_length", min_length);
         $(validationTest.field("username").html).val("jack");
         expect(validationTest.validateField("username", { min_length: 5 }).messages[0]).toEqual("Field username has to be at least 5 characters");
 
@@ -239,9 +242,12 @@ describe("jQuery Form Validator", function() {
         expect(validationResp.fields.username.valid).toEqual(false);
       });
       it("can add validations for same field multiple times", function() {
-        validationTest.addValidationMethod("exact_length", function(val, arg) {
-          return val.length == arg;
-        }, "Field %F has to be %ARG characters");
+        validationTest.addValidationMethod("exact_length", {
+          fn: function(val, arg) {
+            return val.length === arg;
+          },
+          message: "Field %F has to be %ARG characters"
+        });
         validationTest.addValidation("username", { exact_length: 5 });
         validationTest.addValidation("username", { matches: "jackf" });
 
@@ -274,9 +280,12 @@ describe("jQuery Form Validator", function() {
       });
 
       it("lets runValidations be given a flag to clear pending validations", function() {
-        validationTest.addValidationMethod("exact_length", function(val, arg) {
-          return val.length == arg;
-        }, "Field %F has to be %ARG characters");
+        validationTest.addValidationMethod("exact_length", {
+          fn: function(val, arg) {
+            return val.length === arg;
+          },
+          message: "Field %F has to be %ARG characters"
+        });
         validationTest.addValidation("username", { exact_length: 5 });
         validationTest.addValidation("username", { matches: "jackf" });
         $(validationTest.field("username").html).val("jackf");

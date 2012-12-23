@@ -25,7 +25,7 @@
 (function(window) {
   // the JFV class
   var JFV = function() {
-    this.VERSION = "0.6.0";
+    this.VERSION = "0.9.0";
 
     // Stores all the form fields that are added to the JFV
     this.formFields = {};
