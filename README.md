@@ -231,15 +231,29 @@ There are more to come, but until then, if you end up writing some, please post 
 
 There's also methods to add validations.
 
-#### `addValidationMethod(name, fn, message)`
-`name` is the name you'll refer to when adding validations to a field.
+#### `addValidationMethod(name, obj)`
 
+Pass in the validation name and an object of properties.
+
+```javascript
+var new_matches = {
+  message: "Field %F must equal %ARG",
+  fn: function(val, arg) {
+    return val == arg;
+  }
+}
+addValidationMethod('matches', new_matches);
+```
+
+`name` is the name you'll refer to when adding validations to a field.
+`obj` should contain two fields:
 `fn` is the function that's run to test the validation. It's passed three arguments:
 - the value of the field you're validating against
 - the parameter(s) it's called with
 - a jQuery object containing the field
-
 It's unlikely you'll ever use the third parameter, but it's there if you need it. A validation method just needs to return true or false.
+
+`message` is the method's error message. These contain placeholders, which are documented below.
 
 For example, the `min_length` validation function looks like so:
 
@@ -280,9 +294,12 @@ Field %F must be a minimum of %ARGS[0] characters and a maximum of %ARGS[1]
 Here's an example of how I'd add an `exact_length` validator:
 
 ```javascript
-addValidationMethod("exact_length", function(val, arg) {
-  return val.length == arg;
-}, "Field %F has to be %ARG characters");
+addValidationMethod("exact_length", {
+  fn: function(val, arg) {
+    return val.length == arg;
+  },
+  message: "Field %F has to be %ARG characters"
+});
 ```
 
 Which could then be used as `{ exact_length: 6 }`
@@ -306,7 +323,7 @@ Returns:
 }
 ```
 
-#### `saveValidationMethod(name, obj)`
+#### `addValidationMethod(name, obj)`
 
 Pass in the validation name and an object to save it:
 
@@ -325,7 +342,7 @@ And that's it! A good place to start is `demo/demo.js`, which has a plain exampl
 
 ## Contributing
 
-This project uses Grunt JS for testing, linting and delpoying.
+This project uses Grunt JS for testing, linting and deploying.
 
 Install Grunt JS: `npm install -g grunt`
 
@@ -348,12 +365,17 @@ If you make a pull request, please write tests for it :)
 
 ## Todo
 
-- Add more validation methods
 - Add NodeJS support
-- Add AMD support
 - test and document cross-browser support
 
 ## Changelist
+
+__Version 0.9__
+- support AMD libraries like RequireJS.
+- switch to using proper semantic versioning (from this point on)
+- generated a Docco build file (see `docs/`).
+- rewrote library as a JS class (public API usage hasn't changed)
+- support validating checkboxes as well as text fields
 
 __Version 0.6__
 - changed the response object to return each field and its error messages indidividually - thanks @joshstrange for the initial idea and some of the code.
