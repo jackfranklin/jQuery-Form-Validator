@@ -368,7 +368,10 @@ If you make a pull request, please write tests for it :)
 - Add NodeJS support
 - test and document cross-browser support
 
-## Changelist
+## Changelog
+
+__Version 0.9.2__
+- added `fields()` method, which returns the fields object of a JFV instance.
 
 __Version 0.9.1__
 - add methods to `JFV.prototype`, not just to the `JFV` object.

@@ -63,6 +63,12 @@
     return this.formFields[name];
   };
 
+  // get back the formFields object
+  JFV.prototype.fields = function() {
+    return this.formFields;
+  };
+
+
   // Clears out all the fields the JFV validator knows about.
   // Useful if you need to completely clear all the fields
   JFV.prototype.clearFields = function() {
