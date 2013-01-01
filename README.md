@@ -370,6 +370,9 @@ If you make a pull request, please write tests for it :)
 
 ## Changelist
 
+__Version 0.9.1__
+- add methods to `JFV.prototype`, not just to the `JFV` object.
+
 __Version 0.9__
 - support AMD libraries like RequireJS.
 - switch to using proper semantic versioning (from this point on)
