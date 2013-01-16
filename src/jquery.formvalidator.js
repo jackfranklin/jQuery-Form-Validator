@@ -110,7 +110,7 @@
 
       // If it doesn't pass, store the error message, otherwise do nothing.
       if(!method.fn(fieldValue, params, field.html)) {
-        errorMessages.push(this.replacePlaceholdersInMessage(method.message, { name: name, params: params }));
+        errorMessages.push(this.replacePlaceholdersInMessage(method.message, { name: field.html.data("validatorPlaceholder") || name, params: params }));
       }
     }
 

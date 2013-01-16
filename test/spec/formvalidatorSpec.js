@@ -195,6 +195,21 @@ describe("jQuery Form Validator", function() {
       });
     });
 
+    describe("user can specify placeholder text in data-attribute", function() {
+      it("lets the user change the text used for the placeholder in error messages", function() {
+        validationTest.addValidationMethod("exact_length", {
+          fn: function(val, arg) {
+            return val.length === arg;
+          },
+          message: "Field %F has to be %ARG characters"
+        });
+
+        $(validationTest.field("username").html).data("validatorPlaceholder", "Username");
+        $(validationTest.field("username").html).val("jack");
+        expect(validationTest.validateField("username", { min_length: 5 }).messages[0]).toEqual("Field Username has to be at least 5 characters");
+      });
+    });
+
 
 
     describe("validations can be added and run at a later time", function() {
